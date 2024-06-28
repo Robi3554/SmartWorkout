@@ -1,10 +1,14 @@
 using SmartWorkout.Components;
+using SmartWorkout.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContext<SmartWorkoutContext>();
 
 var app = builder.Build();
 
@@ -19,9 +23,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+//app.MapRazorComponents<App>()
+//    .AddInteractiveServerRenderMode();
+
+app.UseEndpoints(endpoints =>
+{
+   _ = endpoints.MapControllers();
+   _ = endpoints.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+});
 
 app.Run();

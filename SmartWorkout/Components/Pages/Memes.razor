@@ -1,0 +1,53 @@
+﻿@page "/memes"
+@using System.IO;
+
+<h3>Memes</h3>
+
+<div class="row">
+    <div class="col-md-3">
+        <button class="btn btn-primary" @onclick="LoadImages">Load Images</button>
+        <hr />
+        <h2>Files List</h2>
+        <hr />
+        @if (filesList != null && filesList.Count > 0)
+        {
+            int nSL = 0;
+            @foreach (string file in filesList)
+            {
+                nSL++;
+                <br />
+                <span>@nSL.</span>
+                <span @onclick="@(e => ReadFile(file))" style="cursor:pointer;text-decoration:underline;color:blue;">@file</span>
+            }
+        }
+    </div>
+    <div class="col-md-9">
+        <h1>Image Name : @imageName</h1>
+        <div>
+            <img src="@image" asp-append-version="true" style="width:400px;height:400px;" />
+        </div>
+    </div>
+</div>
+
+@code {
+    string image = "";
+    string imageName = "N/A";
+
+    List<string> filesList = new List<string>();
+    string path = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images"}";
+
+    public void LoadImages()
+    {
+        var files = Directory.GetFiles(path);
+        foreach (var file in files)
+        {
+            filesList.Add(Path.GetFileName(file));
+        }
+    }
+
+    public void ReadFile(string fileName)
+    {
+        imageName = fileName.Split('.')[0];
+        image = "/images/" + fileName;
+    }
+}

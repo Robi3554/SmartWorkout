@@ -1,0 +1,72 @@
+﻿@page "/users"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess
+@using SmartWorkout.DataAccess.Repositories
+@attribute [StreamRendering]
+
+<PageTitle>Users</PageTitle>
+
+<h1>Users</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Wheight</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Name</td>
+                    <td>@user.Surname</td>
+                    <td>@(user.Email ?? "NoEmail")</td>
+                    <td>@(user.Phone ?? "NoPhone")</td>
+                    <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
+                    <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoWeight")</td>
+                    <td>
+                        <button @onclick="() => Delete(user.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    //private User[]? users;
+
+    private List<User> users = new List<User>();
+
+    private static SmartWorkoutContext context = new SmartWorkoutContext();
+
+    private UserRepository repo = new UserRepository(context);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(50);
+
+        IEnumerable<User> col = await repo.GetAllAsync();
+        users = col.ToList();
+    }
+
+    protected async Task Delete(int id)
+    {
+        
+    }
+}

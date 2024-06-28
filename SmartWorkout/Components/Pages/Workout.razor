@@ -1,0 +1,41 @@
+﻿@page "/workout"
+
+<h3>Workout</h3>
+
+<form>
+	<div class=" w-25 mb-3">
+		<div class="mb-2">
+			<label for="form-control">Client</label>
+		</div>
+		<select class="form-control form-control-lg">
+			<option>Adrian Antonio</option>
+			<option>Groknak The Barbarian</option>
+		</select>
+	</div>
+	<div class="mb-3 w-50">
+		<label for="exercises">Exercises</label>
+		<input type="text" class="form-control" id="exercises">
+	</div>
+	<div class="mb-3 w-25">
+		<label for="series">Series</label>
+		<input type="number" class="form-control" id="series">
+	</div>
+	<div class="mb-3 w-25">
+		<label for="repetitions">Repetitions</label>
+		<input type="number" class="form-control" id="repetitions">
+	</div>
+	<div class="mb-3 w-25">
+		<label for="weights">Weights</label>
+		<input type="number" class="form-control" id="weights">
+		<small id="help" class="form-text text-muted">If you didn't use any weights you can type 0.</small>
+	</div>
+	<div class="mb-3 w-25">
+		<label for="date">Date of Workout</label>
+		<input type="date" class="form-control" id="date">
+	</div>
+</form>
+
+
+@code {
+
+}
