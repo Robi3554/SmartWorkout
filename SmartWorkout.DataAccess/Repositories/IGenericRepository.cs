@@ -10,9 +10,9 @@ namespace SmartWorkout.DataAccess.Repositories
     public interface IGenericRepository<T>: IDisposable
     {
         Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetUserByIdAsync(int id);
-        Task<T> AddUserAsync(T t);
-        Task<T> UpdateUserAsync(T t);
-        Task DeleteUserAsync(int id);
+        Task<T> GetByIdAsync(int id);
+        Task<T> AddAsync(T t);
+        Task<T> UpdateAsync(T t);
+        Task DeleteAsync(int id);
     }
 }

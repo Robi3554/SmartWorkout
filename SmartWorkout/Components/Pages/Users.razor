@@ -38,7 +38,7 @@ else
                     <td>@(user.Email ?? "NoEmail")</td>
                     <td>@(user.Phone ?? "NoPhone")</td>
                     <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
-                    <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoWeight")</td>
+                    <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
                     <td>
                         <button @onclick="() => Delete(user.Id)">Delete</button>
                     </td>
@@ -59,7 +59,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(50);
+        await Task.Delay(25);
 
         IEnumerable<User> col = await repo.GetAllAsync();
         users = col.ToList();

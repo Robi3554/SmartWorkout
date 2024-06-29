@@ -10,21 +10,23 @@ namespace SmartWorkout.DataAccess.Repositories
 {
     public class GenericRepository<T> : IDisposable, IGenericRepository<T> where T : class
     {
-        public SmartWorkoutContext _context;
+        private readonly SmartWorkoutContext _context;
+
+        protected bool disposed = false;
 
         public GenericRepository(SmartWorkoutContext context)
         {
             _context = context;
         }
 
-        public async Task<T> AddUserAsync(T t)
+        public async Task<T> AddAsync(T t)
         {
             await _context.Set<T>().AddAsync(t);
             await _context.SaveChangesAsync();
             return t;
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             var t = await _context.Set<T>().FindAsync(id);
 
@@ -43,9 +45,22 @@ namespace SmartWorkout.DataAccess.Repositories
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    _context.Dispose();
+                }
+            }
+            disposed = true;
+        }
+
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -53,12 +68,12 @@ namespace SmartWorkout.DataAccess.Repositories
             return await _context.Set<T>().ToListAsync();
         }
 
-        public Task<T> GetUserByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Set<T>().FindAsync(id);
         }
 
-        public Task<T> UpdateUserAsync(T t)
+        public async Task<T> UpdateAsync(T t)
         {
             throw new NotImplementedException();
         }
