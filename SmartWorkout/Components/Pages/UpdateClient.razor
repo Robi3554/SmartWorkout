@@ -1,0 +1,55 @@
+﻿@page "/updateClient"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Repositories
+
+@inject IGenericRepository<User> repo;
+
+<h3>UpdateClient</h3>
+
+<EditForm Model="modUser" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3 w-50">
+        <label for="name">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="modUser.Name" />
+        <ValidationMessage For="@(() => modUser.Name)" />
+    </div>
+    <div class="mb-3 w-50">
+        <label for="surname">Surname</label>
+        <InputText id="surname" class="form-control" @bind-Value="modUser.Surname" />
+        <ValidationMessage For="@(() => modUser.Surname)" />
+    </div>
+    <div class="mb-3 w-50">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="modUser.Email" />
+    </div>
+    <div class="mb-3 w-25">
+        <label for="phone">Phone</label>
+        <InputText id="phone" class="form-control" @bind-Value="modUser.Phone" />
+        <ValidationMessage For="@(() => modUser.Phone)" />
+    </div>
+    <div class="mb-3 w-25">
+        <label for="weight">Weight</label>
+        <InputNumber id="weight" class="form-control" @bind-Value="modUser.Weight" />
+    </div>
+    <div class="mb-3 w-25">
+        <label for="age">Age</label>
+        <InputNumber id="age" class="form-control" @bind-Value="modUser.Age" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </div>
+</EditForm>
+
+@code {
+    private User modUser = new User();
+
+    protected override void OnInitialized() => modUser ??= new();
+
+    private async Task Submit()
+    {
+        await repo.AddAsync(modUser);
+        modUser = new User();
+    }
+}

@@ -19,7 +19,7 @@ namespace SmartWorkout.DataAccess.Repositories
             _context = context;
         }
 
-        public async Task<T> AddAsync(T t)
+        public virtual async Task<T> AddAsync(T t)
         {
             await _context.Set<T>().AddAsync(t);
             await _context.SaveChangesAsync();
@@ -63,19 +63,21 @@ namespace SmartWorkout.DataAccess.Repositories
             GC.SuppressFinalize(this);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<T> UpdateAsync(T t)
+        public virtual async Task<T> UpdateAsync(T t)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Entry(t).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return t;
         }
     }
 }

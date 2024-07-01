@@ -10,8 +10,6 @@
 
 <h1>Users</h1>
 
-<p>This component demonstrates showing data.</p>
-
 @if (users == null)
 {
     <p><em>Loading...</em></p>
@@ -38,9 +36,12 @@ else
                     <td>@user.Name</td>
                     <td>@user.Surname</td>
                     <td>@(user.Email ?? "NoEmail")</td>
-                    <td>@(user.Phone ?? "NoPhone")</td>
+                    <td>@(!string.IsNullOrEmpty(user.Phone) ? user.Phone : "NoPhone")</td>
                     <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
                     <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
+                    <td>
+                        <button @onclick="() => UpdateUser(user.Id)">Update</button>
+                    </td>
                     <td>
                         <button @onclick="() => Delete(user.Id)">Delete</button>
                     </td>
@@ -48,6 +49,10 @@ else
             }
         </tbody>
     </table>
+
+    <body>
+       
+    </body>
 }
 
 @code {
@@ -55,23 +60,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(25);
-
         IEnumerable<User> col = await repo.GetAllAsync();
         users = col.ToList();
     }
 
     protected async Task Delete(int id)
     {
-        await Task.Delay(5);
-
         await repo.DeleteAsync(id);
-        
+
         var userToRemove = users.FirstOrDefault(u => u.Id == id);
         if (userToRemove != null)
         {
             users.Remove(userToRemove);
         }
+    }
+
+    protected async Task UpdateUser(int id)
+    {
+        
 
         await InvokeAsync(StateHasChanged);
     }

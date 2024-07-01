@@ -4,19 +4,21 @@
 
 @inject IGenericRepository<User> repo;
 
-<h3>User</h3>
+<h3>AddClient</h3>
 
-<EditForm Model="newUser" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="newUser" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3 w-50">
         <label for="name">Name</label>
         <InputText id="name" class="form-control" @bind-Value="newUser.Name" />
+        <ValidationMessage For="@(() => newUser.Name)" />
     </div>
     <div class="mb-3 w-50">
         <label for="surname">Surname</label>
         <InputText id="surname" class="form-control" @bind-Value="newUser.Surname" />
+        <ValidationMessage For="@(() => newUser.Surname)" />
     </div>
     <div class="mb-3 w-50">
         <label for="email">Email</label>
@@ -25,6 +27,7 @@
     <div class="mb-3 w-25">
         <label for="phone">Phone</label>
         <InputText id="phone" class="form-control" @bind-Value="newUser.Phone" />
+        <ValidationMessage For="@(() => newUser.Phone)" />
     </div>
     <div class="mb-3 w-25">
         <label for="weight">Weight</label>
@@ -42,7 +45,9 @@
 @code {
     private User newUser = new User();
 
-    private async Task HandleValidSubmit()
+    protected override void OnInitialized() => newUser ??= new();
+
+    private async Task Submit()
     {
         await repo.AddAsync(newUser);
         newUser = new User();
