@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartWorkout.DataAccess.Repositories
 {
-    public interface IUserRepository: IDisposable
+    public interface IUserRepository
     {
         Task<IEnumerable<User>> GetAllAsync();
         Task<User> GetUserByIdAsync(int id);

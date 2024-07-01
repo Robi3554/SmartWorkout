@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmartWorkout.DataAccess.Repositories
 {
-    public class GenericRepository<T> : IDisposable, IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly SmartWorkoutContext _context;
 
@@ -62,6 +62,8 @@ namespace SmartWorkout.DataAccess.Repositories
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {

@@ -18,9 +18,11 @@ namespace SmartWorkout.DBAccess.Entities
         [RegularExpression(@"^\S+$", ErrorMessage = "Name cannot contain spaces")]
         [Required(ErrorMessage = "Surname is required")]
         public string Surname { get; set; } = null!;
+
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid mail format")]
         public string? Email { get; set; }
 
-        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Phone number must start with 0 and be 10 digits")]
+        [RegularExpression(@"^(?:0[0-9]{9}|0040[0-9]{9}|\+40[0-9]{9})$", ErrorMessage = "Invalid phone nunber format")]
         public string? Phone { get; set; }
         public double? Weight { get; set; }
         public int? Age { get; set; }

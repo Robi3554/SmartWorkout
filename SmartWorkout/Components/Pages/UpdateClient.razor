@@ -1,10 +1,11 @@
-﻿@page "/updateClient"
+﻿@page "/updateClient/{userID:int}"
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
 
 @inject IGenericRepository<User> repo;
+@inject NavigationManager Navigation;
 
-<h3>UpdateClient</h3>
+<h3>Update Client</h3>
 
 <EditForm Model="modUser" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
@@ -38,18 +39,24 @@
         <InputNumber id="age" class="form-control" @bind-Value="modUser.Age" />
     </div>
     <div>
-        <button type="submit" class="btn btn-primary">Add User</button>
+        <button type="submit" class="btn btn-primary">Update User</button>
     </div>
 </EditForm>
 
 @code {
     private User modUser = new User();
 
-    protected override void OnInitialized() => modUser ??= new();
+    [Parameter]
+    public int userID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        modUser = await repo.GetByIdAsync(userID) ?? new User();
+    }
 
     private async Task Submit()
     {
-        await repo.AddAsync(modUser);
-        modUser = new User();
+        await repo.UpdateAsync(modUser);
+        Navigation.NavigateTo("/users");
     }
 }

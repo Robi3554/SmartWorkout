@@ -3,6 +3,7 @@
 @using SmartWorkout.DataAccess.Repositories
 
 @inject IGenericRepository<User> repo;
+@inject NavigationManager Navigation;
 
 <h3>AddClient</h3>
 
@@ -12,7 +13,7 @@
 
     <div class="mb-3 w-50">
         <label for="name">Name</label>
-        <InputText id="name" class="form-control" @bind-Value="newUser.Name" />
+        <InputText id="name" class="form-control" @bind-Value="newUser.Name"/>
         <ValidationMessage For="@(() => newUser.Name)" />
     </div>
     <div class="mb-3 w-50">
@@ -23,6 +24,7 @@
     <div class="mb-3 w-50">
         <label for="email">Email</label>
         <InputText id="email" class="form-control" @bind-Value="newUser.Email" />
+        <ValidationMessage For="@(() => newUser.Email)" />
     </div>
     <div class="mb-3 w-25">
         <label for="phone">Phone</label>
@@ -49,7 +51,23 @@
 
     private async Task Submit()
     {
+        newUser.Name = CapitalizeFirstLetter(newUser.Name);
+        newUser.Surname = CapitalizeFirstLetter(newUser.Surname);
+
         await repo.AddAsync(newUser);
-        newUser = new User();
+        Navigation.NavigateTo("/users");
+        //newUser = new User();
+    }
+
+    private string CapitalizeFirstLetter(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            return char.ToUpper(value[0]) + value.Substring(1);
+        }
+        else
+        {
+            return string.Empty;
+        }
     }
 }

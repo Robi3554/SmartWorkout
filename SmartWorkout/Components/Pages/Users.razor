@@ -3,6 +3,7 @@
 @using SmartWorkout.DataAccess.Repositories
 
 @inject IGenericRepository<User> repo;
+@inject NavigationManager Navigation;
 
 @attribute [StreamRendering]
 
@@ -24,8 +25,9 @@ else
                 <th>Surname</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Wheight</th>
+                <th>Weight</th>
                 <th>Age</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -40,19 +42,13 @@ else
                     <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
                     <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
                     <td>
-                        <button @onclick="() => UpdateUser(user.Id)">Update</button>
-                    </td>
-                    <td>
+                        <button @onclick="() => GoToUpdate(user.Id)">Update</button>
                         <button @onclick="() => Delete(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
-    <body>
-       
-    </body>
 }
 
 @code {
@@ -60,14 +56,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        IEnumerable<User> col = await repo.GetAllAsync();
+        var col = await repo.GetAllAsync();
         users = col.ToList();
     }
 
     protected async Task Delete(int id)
     {
         await repo.DeleteAsync(id);
-
         var userToRemove = users.FirstOrDefault(u => u.Id == id);
         if (userToRemove != null)
         {
@@ -75,10 +70,8 @@ else
         }
     }
 
-    protected async Task UpdateUser(int id)
+    protected void GoToUpdate(int id)
     {
-        
-
-        await InvokeAsync(StateHasChanged);
+        Navigation.NavigateTo($"/updateClient/{id}");
     }
 }
