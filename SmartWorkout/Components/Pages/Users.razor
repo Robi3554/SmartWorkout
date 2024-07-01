@@ -1,7 +1,9 @@
 ﻿@page "/users"
 @using SmartWorkout.DBAccess.Entities
-@using SmartWorkout.DataAccess
 @using SmartWorkout.DataAccess.Repositories
+
+@inject IGenericRepository<User> repo;
+
 @attribute [StreamRendering]
 
 <PageTitle>Users</PageTitle>
@@ -49,13 +51,7 @@ else
 }
 
 @code {
-    //private User[]? users;
-
     private List<User> users = new List<User>();
-
-    private static SmartWorkoutContext context = new SmartWorkoutContext();
-
-    private UserRepository repo = new UserRepository(context);
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,6 +63,16 @@ else
 
     protected async Task Delete(int id)
     {
+        await Task.Delay(5);
+
+        await repo.DeleteAsync(id);
         
+        var userToRemove = users.FirstOrDefault(u => u.Id == id);
+        if (userToRemove != null)
+        {
+            users.Remove(userToRemove);
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 }

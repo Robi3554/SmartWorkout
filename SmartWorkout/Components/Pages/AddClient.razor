@@ -1,0 +1,49 @@
+﻿@page "/addclient"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Repositories
+
+@inject IGenericRepository<User> repo;
+
+<h3>Workout</h3>
+
+<form>
+	<div class=" w-50 mb-3">
+		<div class="mb-3 w-50">
+			<label for="exercises">Name</label>
+			<input type="text" class="form-control" id="name">
+		</div>
+	</div>
+	<div class="mb-3 w-50">
+		<label for="exercises">Surname</label>
+		<input type="text" class="form-control" id="surname">
+	</div>
+	<div class="mb-3 w-50">
+		<label for="series">Email</label>
+		<input type="text" class="form-control" id="email">
+	</div>
+	<div class="mb-3 w-25">
+		<label for="repetitions">Phone</label>
+		<input type="text" class="form-control" id="phone">
+	</div>
+	<div class="mb-3 w-25">
+		<label for="weights">Weight</label>
+		<input type="text" class="form-control" id="weight">
+	</div>
+	<div class="mb-3 w-25">
+		<label for="date">Age</label>
+		<input type="number" class="form-control" id="age">
+	</div>
+	<div>
+		<button @onclick="() => AddUser(user)">Delete</button>
+	</div>
+</form>
+
+
+@code {
+	private User user = new User();
+
+	protected async Task AddUser(User user)
+	{
+		
+	}
+}

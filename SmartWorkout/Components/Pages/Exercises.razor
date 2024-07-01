@@ -1,8 +1,64 @@
 ﻿@page "/exercises"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Repositories
+
+@inject IGenericRepository<Exercise> repo;
+
 @attribute [StreamRendering]
 
 <h1>Exercises</h1>
 
-@code {
+@if (exercises == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var exercise in exercises)
+            {
+                <tr>
+                    <td>@exercise.Id</td>
+                    <td>@exercise.Name</td>
+                    <td>
+                        <button @onclick="() => Delete(exercise.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
+@code {
+    private List<Exercise> exercises = new List<Exercise>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(25);
+
+        IEnumerable<Exercise> col = await repo.GetAllAsync();
+        exercises = col.ToList();
+    }
+
+    protected async Task Delete(int id)
+    {
+        await Task.Delay(5);
+
+        await repo.DeleteAsync(id);
+
+        var exerciseToRemove = exercises.FirstOrDefault(u => u.Id == id);
+        if (exerciseToRemove != null)
+        {
+            exercises.Remove(exerciseToRemove);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 }

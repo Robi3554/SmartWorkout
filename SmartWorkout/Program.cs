@@ -1,5 +1,8 @@
 using SmartWorkout.Components;
 using SmartWorkout.DataAccess;
+using MudBlazor.Services;
+using SmartWorkout.DataAccess.Repositories;
+using SmartWorkout.DBAccess.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddDbContext<SmartWorkoutContext>();
+
+builder.Services.AddMudServices();
+
+builder.Services.AddScoped<IGenericRepository<User>, UserRepository>();
+builder.Services.AddScoped<IGenericRepository<Exercise>, ExerciseRepository>();
 
 var app = builder.Build();
 
