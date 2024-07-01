@@ -4,46 +4,47 @@
 
 @inject IGenericRepository<User> repo;
 
-<h3>Workout</h3>
+<h3>User</h3>
 
-<form>
-	<div class=" w-50 mb-3">
-		<div class="mb-3 w-50">
-			<label for="exercises">Name</label>
-			<input type="text" class="form-control" id="name">
-		</div>
-	</div>
-	<div class="mb-3 w-50">
-		<label for="exercises">Surname</label>
-		<input type="text" class="form-control" id="surname">
-	</div>
-	<div class="mb-3 w-50">
-		<label for="series">Email</label>
-		<input type="text" class="form-control" id="email">
-	</div>
-	<div class="mb-3 w-25">
-		<label for="repetitions">Phone</label>
-		<input type="text" class="form-control" id="phone">
-	</div>
-	<div class="mb-3 w-25">
-		<label for="weights">Weight</label>
-		<input type="text" class="form-control" id="weight">
-	</div>
-	<div class="mb-3 w-25">
-		<label for="date">Age</label>
-		<input type="number" class="form-control" id="age">
-	</div>
-	<div>
-		<button @onclick="() => AddUser(user)">Delete</button>
-	</div>
-</form>
+<EditForm Model="newUser" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
+    <div class="mb-3 w-50">
+        <label for="name">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="newUser.Name" />
+    </div>
+    <div class="mb-3 w-50">
+        <label for="surname">Surname</label>
+        <InputText id="surname" class="form-control" @bind-Value="newUser.Surname" />
+    </div>
+    <div class="mb-3 w-50">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="newUser.Email" />
+    </div>
+    <div class="mb-3 w-25">
+        <label for="phone">Phone</label>
+        <InputText id="phone" class="form-control" @bind-Value="newUser.Phone" />
+    </div>
+    <div class="mb-3 w-25">
+        <label for="weight">Weight</label>
+        <InputNumber id="weight" class="form-control" @bind-Value="newUser.Weight" />
+    </div>
+    <div class="mb-3 w-25">
+        <label for="age">Age</label>
+        <InputNumber id="age" class="form-control" @bind-Value="newUser.Age" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </div>
+</EditForm>
 
 @code {
-	private User user = new User();
+    private User newUser = new User();
 
-	protected async Task AddUser(User user)
-	{
-		
-	}
+    private async Task HandleValidSubmit()
+    {
+        await repo.AddAsync(newUser);
+        newUser = new User();
+    }
 }
