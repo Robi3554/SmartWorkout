@@ -24,7 +24,11 @@ namespace SmartWorkout.DBAccess.Entities
 
         [RegularExpression(@"^(?:0[0-9]{9}|0040[0-9]{9}|\+40[0-9]{9})$", ErrorMessage = "Invalid phone nunber format")]
         public string? Phone { get; set; }
+
+        [RegularExpression(@"^(3[0-9]{1,2}?|[4-9][0-9])$", ErrorMessage = "Invalid weight")]
         public double? Weight { get; set; }
+
+        [RegularExpression(@"^(1[5-9]|[2-8][0-9]|9[0-5])$", ErrorMessage = "Invalid age")]
         public int? Age { get; set; }
 
         public ICollection<Workout> Workouts { get; set; } = new HashSet<Workout>();

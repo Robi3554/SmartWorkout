@@ -11,6 +11,31 @@
 
 <h1>Users</h1>
 
+<form @onsubmit="HandleFormSubmit">
+    <div>
+        <SearchBar Items="users" OnSearch="OnSearchTermChanged"></SearchBar>
+    </div>
+
+    <label>
+        <input type="radio" name="search" value="name" @onchange="OnSearchFieldChanged" checked="@(selectedField == "name")"> Name
+    </label>
+    <label>
+        <input type="radio" name="search" value="surname" @onchange="OnSearchFieldChanged" checked="@(selectedField == "surname")"> Surname
+    </label>
+    <label>
+        <input type="radio" name="search" value="email" @onchange="OnSearchFieldChanged" checked="@(selectedField == "email")"> Email
+    </label>
+    <label>
+        <input type="radio" name="search" value="phone" @onchange="OnSearchFieldChanged" checked="@(selectedField == "phone")"> Phone
+    </label>
+    <label>
+        <input type="radio" name="search" value="weight" @onchange="OnSearchFieldChanged" checked="@(selectedField == "weight")"> Weight
+    </label>
+    <label>
+        <input type="radio" name="search" value="age" @onchange="OnSearchFieldChanged" checked="@(selectedField == "age")"> Age
+    </label>
+</form>
+
 @if (users == null)
 {
     <p><em>Loading...</em></p>
@@ -31,7 +56,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in users)
+            @foreach (var user in _users)
             {
                 <tr>
                     <td>@user.Id</td>
@@ -53,11 +78,16 @@ else
 
 @code {
     private List<User> users = new List<User>();
+    private List<User> _users = new List<User>();
+
+    private string selectedField = "name";
+    private string searchTerm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var col = await repo.GetAllAsync();
         users = col.ToList();
+        _users = users.ToList();
     }
 
     protected async Task Delete(int id)
@@ -67,11 +97,64 @@ else
         if (userToRemove != null)
         {
             users.Remove(userToRemove);
+            FilterUsers();
         }
     }
 
     protected void GoToUpdate(int id)
     {
         Navigation.NavigateTo($"/updateClient/{id}");
+    }
+
+    private void OnSearchFieldChanged(ChangeEventArgs e)
+    {
+        selectedField = e.Value.ToString();
+        FilterUsers();
+    }
+
+    private void OnSearchTermChanged(string term)
+    {
+        searchTerm = term;
+        FilterUsers();
+    }
+
+    private void HandleFormSubmit()
+    {
+        FilterUsers();
+    }
+
+    protected void FilterUsers()
+    {
+        if (string.IsNullOrEmpty(searchTerm))
+        {
+            _users = users.ToList();
+        }
+        else
+        {
+            switch (selectedField)
+            {
+                case "name":
+                    _users = users.Where(user => user.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case "surname":
+                    _users = users.Where(user => user.Surname.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case "email":
+                    _users = users.Where(user => user.Email != null && user.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case "phone":
+                    _users = users.Where(user => user.Phone != null && user.Phone.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case "weight":
+                    _users = users.Where(user => user.Weight.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case "age":
+                    _users = users.Where(user => user.Age.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                default:
+                    _users = users.ToList();
+                    break;
+            }
+        }
     }
 }

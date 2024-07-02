@@ -34,10 +34,12 @@
     <div class="mb-3 w-25">
         <label for="weight">Weight</label>
         <InputNumber id="weight" class="form-control" @bind-Value="newUser.Weight" />
+        <ValidationMessage For="@(() => newUser.Weight)" />
     </div>
     <div class="mb-3 w-25">
         <label for="age">Age</label>
         <InputNumber id="age" class="form-control" @bind-Value="newUser.Age" />
+        <ValidationMessage For="@(() => newUser.Age)" />
     </div>
     <div>
         <button type="submit" class="btn btn-primary">Add User</button>
