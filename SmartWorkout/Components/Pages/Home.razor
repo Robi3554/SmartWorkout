@@ -1,11 +1,8 @@
 ﻿@page "/"
-@using MudBlazor;
 
-<PageTitle>Home</PageTitle>
+@using MudBlazor
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<MudThemeProvider DefaultScrollbar="true" />
 
 <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
 <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode" />

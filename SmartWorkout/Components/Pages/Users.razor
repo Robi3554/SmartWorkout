@@ -7,6 +7,8 @@
 
 @attribute [StreamRendering]
 
+@rendermode InteractiveServer
+
 <PageTitle>Users</PageTitle>
 
 <h1>Users</h1>
@@ -16,24 +18,26 @@
         <SearchBar Items="users" OnSearch="OnSearchTermChanged"></SearchBar>
     </div>
 
-    <label>
-        <input type="radio" name="search" value="name" @onchange="OnSearchFieldChanged" checked="@(selectedField == "name")"> Name
-    </label>
-    <label>
-        <input type="radio" name="search" value="surname" @onchange="OnSearchFieldChanged" checked="@(selectedField == "surname")"> Surname
-    </label>
-    <label>
-        <input type="radio" name="search" value="email" @onchange="OnSearchFieldChanged" checked="@(selectedField == "email")"> Email
-    </label>
-    <label>
-        <input type="radio" name="search" value="phone" @onchange="OnSearchFieldChanged" checked="@(selectedField == "phone")"> Phone
-    </label>
-    <label>
-        <input type="radio" name="search" value="weight" @onchange="OnSearchFieldChanged" checked="@(selectedField == "weight")"> Weight
-    </label>
-    <label>
-        <input type="radio" name="search" value="age" @onchange="OnSearchFieldChanged" checked="@(selectedField == "age")"> Age
-    </label>
+    <div = class="container">
+        <label>
+            <input type="radio" name="search" value="name" @onchange="OnSearchFieldChanged" checked="@(selectedField == "name")"> Name
+        </label>
+        <label>
+            <input type="radio" name="search" value="surname" @onchange="OnSearchFieldChanged" checked="@(selectedField == "surname")"> Surname
+        </label>
+        <label>
+            <input type="radio" name="search" value="email" @onchange="OnSearchFieldChanged" checked="@(selectedField == "email")"> Email
+        </label>
+        <label>
+            <input type="radio" name="search" value="phone" @onchange="OnSearchFieldChanged" checked="@(selectedField == "phone")"> Phone
+        </label>
+        <label>
+            <input type="radio" name="search" value="weight" @onchange="OnSearchFieldChanged" checked="@(selectedField == "weight")"> Weight
+        </label>
+        <label>
+            <input type="radio" name="search" value="age" @onchange="OnSearchFieldChanged" checked="@(selectedField == "age")"> Age
+        </label>
+    </div>    
 </form>
 
 @if (users == null)
@@ -43,7 +47,7 @@
 else
 {
     <table class="table">
-        <thead>
+        <thead class="header">
             <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -67,8 +71,8 @@ else
                     <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
                     <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
                     <td>
-                        <button class="btn-primary" @onclick="() => GoToUpdate(user.Id)">Update</button>
-                        <button class="btn-primary" @onclick="() => Delete(user.Id)">Delete</button>
+                        <button class="btn-primary-bordered" @onclick="() => GoToUpdate(user.Id)">Update</button>
+                        <button class="btn-primary-bordered" @onclick="() => Delete(user.Id)">Delete</button>
                     </td>
                 </tr>
             }

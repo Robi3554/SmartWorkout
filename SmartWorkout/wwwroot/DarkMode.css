@@ -1,0 +1,31 @@
+:root {
+    --bs-body-bg: linear-gradient(45deg, #100c08, #2c3e50);
+    --bs-body-color: aliceblue !important;
+}
+
+body {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.top-row {
+    background: var(--bs-body-bg) !important;
+    color: aliceblue !important;
+}
+
+.form-control {
+    background-color: var(--bs-body-bg);
+    color: aliceblue;
+}
+
+.form-control:active, .form-control:focus{
+    background-color: var(--bs-body-bg);
+    color: aliceblue;
+}
+
+table{
+    color: aliceblue !important;
+}
