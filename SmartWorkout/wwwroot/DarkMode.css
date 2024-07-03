@@ -26,6 +26,10 @@ body {
     color: aliceblue;
 }
 
-table{
+table {
     color: aliceblue !important;
+}
+
+tbody tr{
+    background-color: var(--bs-body-bg) !important;
 }

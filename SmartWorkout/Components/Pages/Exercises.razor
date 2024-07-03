@@ -7,22 +7,11 @@
 
 @attribute [StreamRendering]
 
+@rendermode InteractiveServer
+
 <PageTitle>Exercises</PageTitle>
 
 <h1>Exercises</h1>
-
-<form @onsubmit="HandleFormSubmit">
-    <div>
-        <SearchBar Items="exercises" OnSearch="OnSearchTermChanged"></SearchBar>
-    </div>
-
-    <label>
-        <input type="radio" name="search" value="id" @onchange="OnSearchFieldChanged" checked="@(selectedField == "id")"> ID
-    </label>
-    <label>
-        <input type="radio" name="search" value="name" @onchange="OnSearchFieldChanged" checked="@(selectedField == "name")"> Name
-    </label>
-</form>
 
 @if (exercises == null)
 {
@@ -31,22 +20,22 @@
 else
 {
     <table class="table">
-        <thead>
+        @* <thead class="header">
             <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Actions</th>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var exercise in _exercises)
+        </thead> *@
+        <tbody class>
+            @foreach (var exercise in exercises)
             {
                 <tr>
-                    <td>@exercise.Id</td>
+                    @* <td>@exercise.Id</td> *@
                     <td>@exercise.Name</td>
                     <td>
-                        <button class="btn-primary" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
-                        <button class="btn-primary" @onclick="() => Delete(exercise.Id)">Delete</button>
+                        <button class="btn-primary-bordered" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
+                        <button class="btn-primary-bordered" @onclick="() => Delete(exercise.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -56,10 +45,7 @@ else
 
 @code {
     private List<Exercise> exercises = new List<Exercise>();
-    private List<Exercise> _exercises = new List<Exercise>();
 
-    private string selectedField = "id";
-    private string searchTerm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,7 +58,6 @@ else
         {
             var col = await repo.GetAllAsync();
             exercises = col.ToList();
-            _exercises = exercises.ToList();
         }
         catch (Exception ex)
         {
@@ -94,7 +79,6 @@ else
             if (exerciseToRemove != null)
             {
                 exercises.Remove(exerciseToRemove);
-                FilterExercises();
             }
         }
         catch (Exception ex)
@@ -102,44 +86,5 @@ else
             Console.WriteLine($"Error deleting exercise: {ex.Message}");
         }
     }
-
-    private void OnSearchFieldChanged(ChangeEventArgs e)
-    {
-        selectedField = e.Value.ToString();
-        FilterExercises();
-    }
-
-    private void OnSearchTermChanged(string term)
-    {
-        searchTerm = term;
-        FilterExercises();
-    }
-
-    private void HandleFormSubmit()
-    {
-        FilterExercises();
-    }
-
-    protected void FilterExercises()
-    {
-        if (string.IsNullOrEmpty(searchTerm))
-        {
-            _exercises = exercises.ToList();
-        }
-        else
-        {
-            switch (selectedField)
-            {
-                case "id":
-                    _exercises = exercises.Where(exercise => exercise.Id.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
-                    break;
-                case "name":
-                    _exercises = exercises.Where(exercise => exercise.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
-                    break;
-                default:
-                    _exercises = exercises.ToList();
-                    break;
-            }
-        }
-    }
 }
+

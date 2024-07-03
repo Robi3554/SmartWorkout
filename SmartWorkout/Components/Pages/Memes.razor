@@ -30,18 +30,24 @@
 </div>
 
 @code {
-    string image = "";
-    string imageName = "N/A";
+    private string image = "";
+    private string imageName = "N/A";
 
-    List<string> filesList = new List<string>();
-    string path = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images"}";
+    private bool isPressed = false;
+
+    private List<string> filesList = new List<string>();
+    private string path = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\images"}";
 
     public void LoadImages()
     {
-        var files = Directory.GetFiles(path);
-        foreach (var file in files)
+        if (!isPressed)
         {
-            filesList.Add(Path.GetFileName(file));
+            var files = Directory.GetFiles(path);
+            isPressed = true;
+            foreach (var file in files)
+            {
+                filesList.Add(Path.GetFileName(file));
+            }
         }
     }
 
