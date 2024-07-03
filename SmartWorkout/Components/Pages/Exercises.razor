@@ -3,10 +3,26 @@
 @using SmartWorkout.DataAccess.Repositories
 
 @inject IGenericRepository<Exercise> repo;
+@inject NavigationManager Navigation;
 
 @attribute [StreamRendering]
 
+<PageTitle>Exercises</PageTitle>
+
 <h1>Exercises</h1>
+
+<form @onsubmit="HandleFormSubmit">
+    <div>
+        <SearchBar Items="exercises" OnSearch="OnSearchTermChanged"></SearchBar>
+    </div>
+
+    <label>
+        <input type="radio" name="search" value="id" @onchange="OnSearchFieldChanged" checked="@(selectedField == "id")"> ID
+    </label>
+    <label>
+        <input type="radio" name="search" value="name" @onchange="OnSearchFieldChanged" checked="@(selectedField == "name")"> Name
+    </label>
+</form>
 
 @if (exercises == null)
 {
@@ -19,16 +35,18 @@ else
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var exercise in exercises)
+            @foreach (var exercise in _exercises)
             {
                 <tr>
                     <td>@exercise.Id</td>
                     <td>@exercise.Name</td>
                     <td>
-                        <button @onclick="() => Delete(exercise.Id)">Delete</button>
+                        <button class="btn-primary" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
+                        <button class="btn-primary" @onclick="() => Delete(exercise.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -37,28 +55,91 @@ else
 }
 
 @code {
-    private List<Exercise> exercises = new List<Exercise>();
+    private List<Exercise> exercises;
+    private List<Exercise> _exercises;
+
+    private string selectedField = "id";
+    private string searchTerm = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(25);
-
-        IEnumerable<Exercise> col = await repo.GetAllAsync();
-        exercises = col.ToList();
+        await LoadExercises();
     }
 
-    protected async Task Delete(int id)
+    private async Task LoadExercises()
     {
-        await Task.Delay(5);
-
-        await repo.DeleteAsync(id);
-
-        var exerciseToRemove = exercises.FirstOrDefault(u => u.Id == id);
-        if (exerciseToRemove != null)
+        try
         {
-            exercises.Remove(exerciseToRemove);
+            var col = await repo.GetAllAsync();
+            exercises = col.ToList();
+            _exercises = exercises.ToList();
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading exercises: {ex.Message}");
+        }
+    }
 
-        await InvokeAsync(StateHasChanged);
+    private void GoToUpdate(int id)
+    {
+        Navigation.NavigateTo($"/updateexercise/{id}");
+    }
+
+    private async Task Delete(int id)
+    {
+        try
+        {
+            await repo.DeleteAsync(id);
+            var exerciseToRemove = exercises.FirstOrDefault(u => u.Id == id);
+            if (exerciseToRemove != null)
+            {
+                exercises.Remove(exerciseToRemove);
+                FilterExercises();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting exercise: {ex.Message}");
+        }
+    }
+
+    private void OnSearchFieldChanged(ChangeEventArgs e)
+    {
+        selectedField = e.Value.ToString();
+        FilterExercises();
+    }
+
+    private void OnSearchTermChanged(string term)
+    {
+        searchTerm = term;
+        FilterExercises();
+    }
+
+    private void HandleFormSubmit()
+    {
+        FilterExercises();
+    }
+
+    protected void FilterExercises()
+    {
+        if (string.IsNullOrEmpty(searchTerm))
+        {
+            _exercises = exercises.ToList();
+        }
+        else
+        {
+            switch (selectedField)
+            {
+                case "id":
+                    _exercises = exercises.Where(exercise => exercise.Id.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case "name":
+                    _exercises = exercises.Where(exercise => exercise.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                default:
+                    _exercises = exercises.ToList();
+                    break;
+            }
+        }
     }
 }

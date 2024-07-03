@@ -11,7 +11,7 @@ namespace SmartWorkout.DBAccess.Entities
     {
         public int Id { get; set; }
 
-        [RegularExpression(@"^\S+$", ErrorMessage = "Name cannot contain spaces")]
+        [RegularExpression(@"[a-zA-Z]+$", ErrorMessage = "Name cannot contain spaces or numbers")]
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; } = null!;
 

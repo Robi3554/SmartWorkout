@@ -1,4 +1,4 @@
-﻿@page "/updateClient/{userID:int}"
+﻿@page "/updateclient/{userID:int}"
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
 
@@ -24,6 +24,7 @@
     <div class="mb-3 w-50">
         <label for="email">Email</label>
         <InputText id="email" class="form-control" @bind-Value="modUser.Email" />
+        <ValidationMessage For="@(() => modUser.Email)" />
     </div>
     <div class="mb-3 w-25">
         <label for="phone">Phone</label>
@@ -33,10 +34,12 @@
     <div class="mb-3 w-25">
         <label for="weight">Weight</label>
         <InputNumber id="weight" class="form-control" @bind-Value="modUser.Weight" />
+        <ValidationMessage For="@(() => modUser.Weight)" />
     </div>
     <div class="mb-3 w-25">
         <label for="age">Age</label>
         <InputNumber id="age" class="form-control" @bind-Value="modUser.Age" />
+        <ValidationMessage For="@(() => modUser.Age)" />
     </div>
     <div>
         <button type="submit" class="btn btn-primary">Update User</button>

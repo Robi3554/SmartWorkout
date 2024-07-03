@@ -67,8 +67,8 @@ else
                     <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
                     <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
                     <td>
-                        <button @onclick="() => GoToUpdate(user.Id)">Update</button>
-                        <button @onclick="() => Delete(user.Id)">Delete</button>
+                        <button class="btn-primary" @onclick="() => GoToUpdate(user.Id)">Update</button>
+                        <button class="btn-primary" @onclick="() => Delete(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -103,7 +103,7 @@ else
 
     protected void GoToUpdate(int id)
     {
-        Navigation.NavigateTo($"/updateClient/{id}");
+        Navigation.NavigateTo($"/updateclient/{id}");
     }
 
     private void OnSearchFieldChanged(ChangeEventArgs e)
@@ -146,10 +146,10 @@ else
                     _users = users.Where(user => user.Phone != null && user.Phone.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
                     break;
                 case "weight":
-                    _users = users.Where(user => user.Weight.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    _users = users.Where(user => user.Weight != null && user.Weight.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
                     break;
                 case "age":
-                    _users = users.Where(user => user.Age.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    _users = users.Where(user => user.Age != null && user.Age.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
                     break;
                 default:
                     _users = users.ToList();
