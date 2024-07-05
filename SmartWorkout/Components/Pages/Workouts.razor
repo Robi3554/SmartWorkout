@@ -1,7 +1,90 @@
 ﻿@page "/workouts"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Repositories
+@using MudBlazor
 
-<h3>Workouts</h3>
+@inject IGenericRepository<Exercise> repo;
+@inject NavigationManager Navigation;
+
+@attribute [StreamRendering]
+
+@rendermode InteractiveServer
+
+<PageTitle>Workouts</PageTitle>
+
+<h1>Workouts</h1>
+
+@if (exercises == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        @* <thead class="header">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead> *@
+        <tbody class>
+            @foreach (var exercise in exercises)
+            {
+                <tr ="table-row">
+                    @* <td>@exercise.Id</td> *@
+                    <td>@exercise.Name</td>
+                    <td>
+                        <button class="btn-primary" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
+                        <button class="btn-primary" @onclick="() => Delete(exercise.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    private List<Exercise> exercises = new List<Exercise>();
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadExercises();
+    }
+
+    private async Task LoadExercises()
+    {
+        try
+        {
+            var col = await repo.GetAllAsync();
+            exercises = col.ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading exercises: {ex.Message}");
+        }
+    }
+
+    private void GoToUpdate(int id)
+    {
+        Navigation.NavigateTo($"/updateexercise/{id}");
+    }
+
+    private async Task Delete(int id)
+    {
+        try
+        {
+            await repo.DeleteAsync(id);
+            var exerciseToRemove = exercises.FirstOrDefault(u => u.Id == id);
+            if (exerciseToRemove != null)
+            {
+                exercises.Remove(exerciseToRemove);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting exercise: {ex.Message}");
+        }
+    }
 }

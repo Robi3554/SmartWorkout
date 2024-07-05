@@ -19,7 +19,7 @@
     <div class="mb-3 w-50">
         <label for="surname">Surname</label>
         <InputText id="surname" class="form-control" @bind-Value="newUser.Surname" />
-        <Text>In Case Of Mulptiple Surnames Add a Dash "-" Between Them</Text>
+        In Case Of Mulptiple Surnames Add a Dash "-" Between Them
         <ValidationMessage For="@(() => newUser.Surname)" />
     </div>
     <div class="mb-3 w-50">
@@ -59,7 +59,6 @@
 
         await repo.AddAsync(newUser);
         Navigation.NavigateTo("/users");
-        //newUser = new User();
     }
 
     private string CapitalizeFirstLetter(string value)

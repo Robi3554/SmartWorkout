@@ -1,0 +1,11 @@
+﻿@page "/showid/{userID:int}"
+
+<h3>ShowID</h3>
+
+The id selected is : @userID
+
+@code {
+
+    [Parameter]
+    public int userID { get; set; }
+}

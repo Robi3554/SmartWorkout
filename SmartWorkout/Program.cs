@@ -3,6 +3,7 @@ using SmartWorkout.DataAccess;
 using MudBlazor.Services;
 using SmartWorkout.DataAccess.Repositories;
 using SmartWorkout.DBAccess.Entities;
+using Plk.Blazor.DragDrop;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddMudServices();
 
 builder.Services.AddScoped<IGenericRepository<User>, UserRepository>();
 builder.Services.AddScoped<IGenericRepository<Exercise>, ExerciseRepository>();
+
+builder.Services.AddBlazorDragDrop();
 
 var app = builder.Build();
 
@@ -34,13 +37,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAntiforgery();
 
-//app.MapRazorComponents<App>()
-//    .AddInteractiveServerRenderMode();
-
-app.UseEndpoints(endpoints =>
-{
-   _ = endpoints.MapControllers();
-   _ = endpoints.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-});
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();
