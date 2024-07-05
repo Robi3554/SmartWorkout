@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject AudioService AudioService
+@inject IJSRuntime JSRuntime
 
 <HeadContent>
     @if (isDarkMode)
@@ -32,8 +34,21 @@
     <a class="dismiss">🗙</a>
 </div>
 
+<footer>
+    <div>
+        <h1>Currently Playing: @AudioService.CurrentAudioName</h1>
+        <audio controls @ref="audioPlayer" @onended="PlayNext">
+            <source src="@AudioService.CurrentAudio" type="audio/mpeg">
+            Your browser does not support the audio tag.
+        </audio>
+    </div>
+</footer>
+
+
 @code{
     private bool isDarkMode = false;
+
+    private ElementReference audioPlayer;
 
     private void OnCheckboxChange(ChangeEventArgs e){
         if(e.Value != null)
@@ -41,4 +56,36 @@
             isDarkMode = (bool)e.Value;
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(AudioService.CurrentAudio))
+        {
+            await JSRuntime.InvokeVoidAsync("playAudio", "audioPlayer");
+        }
+    }
+
+    private async Task PlayNext()
+    {
+        AudioService.PlayNextAudio();
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("playAudio", "audioPlayer");
+    }
 }
+
+<script>
+    window.playAudio = function (audioId) {
+        var audioElement = document.getElementById(audioId);
+        if (audioElement) {
+            audioElement.play();
+        }
+    };
+
+    window.getCurrentTime = function (audioElement) {
+        return audioElement.currentTime;
+    };
+
+    window.getDuration = function (audioElement) {
+        return audioElement.duration;
+    };
+</script>

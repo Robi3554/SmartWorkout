@@ -1,4 +1,5 @@
-﻿using SmartWorkout.DBAccess.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SmartWorkout.DBAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,11 @@ namespace SmartWorkout.DataAccess.Repositories
     {
         public WorkoutRepository(SmartWorkoutContext context) : base(context)
         {
+        }
+
+        public override async Task<IEnumerable<Workout>> GetAllAsync()
+        {
+            return await _context.Workouts.Include(u => u.User).Include(el => el.Logs).ThenInclude(e => e.Exercise).ToListAsync();
         }
     }
 }

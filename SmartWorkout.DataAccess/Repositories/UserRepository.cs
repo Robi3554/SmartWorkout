@@ -14,5 +14,10 @@ namespace SmartWorkout.DataAccess.Repositories
         public UserRepository(SmartWorkoutContext context) : base(context)
         {
         }
+
+        public override async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users.Include(w => w.Workouts).ThenInclude(el => el.Logs).ThenInclude(e => e.Exercise).ToListAsync();
+        }
     }
 }

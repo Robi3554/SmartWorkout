@@ -73,6 +73,7 @@ else
                     <td>
                         <button class="btn-primary-bordered" @onclick="() => GoToUpdate(user.Id)">Update</button>
                         <button class="btn-primary-bordered" @onclick="() => Delete(user.Id)">Delete</button>
+                        <button class="btn-primary-bordered" @onclick="() => AddWorkout(user.Id)">Add Workout</button>
                     </td>
                 </tr>
             }
@@ -106,6 +107,16 @@ else
     }
 
     protected void GoToUpdate(int id)
+    {
+        Navigation.NavigateTo($"/updateclient/{id}");
+    }
+
+    protected void AddWorkout(int id)
+    {
+        Navigation.NavigateTo($"/workouts/{id}");
+    }
+
+    protected void GoToWorkouts(int id)
     {
         Navigation.NavigateTo($"/updateclient/{id}");
     }

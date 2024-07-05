@@ -10,7 +10,7 @@ namespace SmartWorkout.DataAccess.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly SmartWorkoutContext _context;
+        protected readonly SmartWorkoutContext _context;
 
         protected bool disposed = false;
 
@@ -62,8 +62,6 @@ namespace SmartWorkout.DataAccess.Repositories
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-
 
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {

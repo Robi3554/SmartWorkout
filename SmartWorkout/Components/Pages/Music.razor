@@ -1,0 +1,102 @@
+﻿@page "/music"
+
+@inject AudioService AudioService
+@inject IJSRuntime JSRuntime
+
+<h3>Music</h3>
+
+<div class="row">
+    <div class="col-md-3">
+        <button class="btn btn-primary" @onclick="LoadAudioFiles">Load Audio Files</button>
+        <hr />
+        <h2>Files List</h2>
+        <hr />
+        @if (AudioService.FilesList != null && AudioService.FilesList.Count > 0)
+        {
+            int nSL = 0;
+            @foreach (string file in AudioService.FilesList)
+            {
+                nSL++;
+                <br />
+                <span>@nSL.</span>
+                <span @onclick="@(e => PlayFile(file))" style="cursor:pointer;text-decoration:underline;color:blue;">@file</span>
+            }
+        }
+    </div>
+    <div>
+        <h1>Audio Name: @AudioService.CurrentAudioName</h1>
+        <audio controls id="audioPlayer" @onloadeddata="UpdateAudioInfo">
+            <source src="@AudioService.CurrentAudio" type="audio/mp3">
+            Your browser does not support the audio tag.
+        </audio>
+        <p>Current Time: @currentTimeFormatted / Duration: @durationFormatted</p>
+    </div>
+</div>
+
+@code {
+    private double currentTime;
+    private double duration;
+
+    private string currentTimeFormatted => FormatTime(currentTime);
+    private string durationFormatted => FormatTime(duration);
+
+    private string path = $"{Directory.GetCurrentDirectory()}{@"\wwwroot\audio"}";
+
+    private string FormatTime(double timeInSeconds)
+    {
+        var timeSpan = TimeSpan.FromSeconds(timeInSeconds);
+        return $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(AudioService.CurrentAudio))
+        {
+            await PlayAudio("audioPlayer");
+        }
+    }
+
+    public async Task LoadAudioFiles()
+    {
+        AudioService.LoadAudioFiles(path);
+    }
+
+    public async Task PlayFile(string fileName)
+    {
+        AudioService.PlayAudio(fileName);
+        await PlayAudio("audioPlayer");
+    }
+
+    private async Task PlayAudio(string audioId)
+    {
+        await JSRuntime.InvokeVoidAsync("playAudio", audioId);
+    }
+
+    private async Task UpdateAudioInfo()
+    {
+        try
+        {
+            // Invoke JS function to get the audio element by ID
+            var audioPlayerRef = await JSRuntime.InvokeAsync<ElementReference>("getElementById", "audioPlayer");
+
+            // Check if audioPlayerRef.Id is not null or empty
+            if (!string.IsNullOrEmpty(audioPlayerRef.Id))
+            {
+                // Invoke JS function to get current time and duration
+                currentTime = await JSRuntime.InvokeAsync<double>("getCurrentTime", audioPlayerRef.Id);
+                duration = await JSRuntime.InvokeAsync<double>("getDuration", audioPlayerRef.Id);
+
+                // Update the UI
+                await InvokeAsync(() => StateHasChanged());
+            }
+            else
+            {
+                Console.WriteLine("Element reference ID is null or empty.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating audio info: {ex.Message}");
+        }
+    }
+}

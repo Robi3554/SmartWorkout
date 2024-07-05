@@ -1,9 +1,10 @@
-﻿@page "/workouts"
+﻿@page "/workouts/{userID:int}"
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
 @using MudBlazor
 
-@inject IGenericRepository<Exercise> repo;
+@inject IGenericRepository<User> repoU;
+@inject IGenericRepository<Workout> repoW;
 @inject NavigationManager Navigation;
 
 @attribute [StreamRendering]
@@ -14,29 +15,36 @@
 
 <h1>Workouts</h1>
 
-@if (exercises == null)
+@if (workouts == null)
 {
     <p><em>Loading...</em></p>
 }
+else if (workouts.Count == 0)
+{
+    <p><em>No workouts found for this user.</em></p>
+}
 else
 {
+    <p>Workouts for @selectedUser.Name @selectedUser.Surname</p>
     <table class="table">
-        @* <thead class="header">
+        <thead class="header">
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Duration(min)</th>
+                <th>Date</th>
                 <th>Actions</th>
             </tr>
-        </thead> *@
-        <tbody class>
-            @foreach (var exercise in exercises)
+        </thead>
+        <tbody>
+            @foreach (var workout in workouts)
             {
-                <tr ="table-row">
-                    @* <td>@exercise.Id</td> *@
-                    <td>@exercise.Name</td>
+                <tr class="table-row">
+                    <td>@workout.Id</td>
+                    <td>@workout.Duration</td>
+                    <td>@workout.Date.ToString("d")</td>
                     <td>
-                        <button class="btn-primary" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
-                        <button class="btn-primary" @onclick="() => Delete(exercise.Id)">Delete</button>
+                        <button class="btn-primary" @onclick="() => GoToUpdate(workout.Id)">Update</button>
+                        <button class="btn-primary" @onclick="() => Delete(workout.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -45,24 +53,41 @@ else
 }
 
 @code {
-    private List<Exercise> exercises = new List<Exercise>();
+    private List<Workout> workouts;
 
+    private User selectedUser;
+
+    [Parameter]
+    public int userID { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadExercises();
+        await LoadWorkouts();
+        await LoadSelectedUser();
     }
 
-    private async Task LoadExercises()
+    private async Task LoadWorkouts()
     {
         try
         {
-            var col = await repo.GetAllAsync();
-            exercises = col.ToList();
+            var colW = await repoW.GetAllAsync();
+            workouts = colW.Where(w => w.User.Id == userID).ToList();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading exercises: {ex.Message}");
+            Console.WriteLine($"Error loading workouts: {ex.Message}");
+        }
+    }
+
+    private async Task LoadSelectedUser()
+    {
+        try
+        {
+            selectedUser = await repoU.GetByIdAsync(userID) ?? new User();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading user: {ex.Message}");
         }
     }
 
@@ -75,16 +100,16 @@ else
     {
         try
         {
-            await repo.DeleteAsync(id);
-            var exerciseToRemove = exercises.FirstOrDefault(u => u.Id == id);
-            if (exerciseToRemove != null)
+            await repoW.DeleteAsync(id);
+            var workoutsToRemove = workouts.FirstOrDefault(u => u.Id == id);
+            if (workoutsToRemove != null)
             {
-                exercises.Remove(exerciseToRemove);
+                workouts.Remove(workoutsToRemove);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting exercise: {ex.Message}");
+            Console.WriteLine($"Error deleting workout: {ex.Message}");
         }
     }
 }
