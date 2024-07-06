@@ -14,7 +14,12 @@
 
     <div class="mb-3 w-50">
         <label for="id">User</label>
-        <InputNumber id="userId" class="form-control" @bind-Value="selectedUser.Id" disabled/>
+        <InputNumber id="userId" class="form-control" @bind-Value="newWorkout.UserId" disabled/>
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="id">User</label>
+        <InputSelect id="userId" class="custom-select" @bind-Value="newWorkout.UserId" />
     </div>
 
     <div class="form-control">
@@ -50,17 +55,19 @@
     {
         selectedUser = await repoU.GetByIdAsync(userID) ?? new User();
 
+        newWorkout.UserId = selectedUser.Id;
+
         newWorkout.Date = DateTime.Now;
     }
 
     private async Task Submit()
     {
         await repoW.AddAsync(newWorkout);
-        Navigation.NavigateTo("/workouts");
+        Navigation.NavigateTo($"/workouts/{selectedUser.Id}");
     }
 
     private void GoToUpdate(int id)
     {
-        Navigation.NavigateTo($"/showid/{id}");
+        
     }
 }

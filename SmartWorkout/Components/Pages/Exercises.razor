@@ -35,7 +35,7 @@ else
                     <td>@exercise.Name</td>
                     <td>
                         <button class="btn-primary-bordered" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
-                        <button class="btn-primary-bordered" @onclick="() => Delete(exercise.Id)">Delete</button>
+                        <button class="btn-danger-bordered" @onclick="() => OpenDeleteDialog(exercise.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -43,9 +43,17 @@ else
     </table>
 }
 
+@if (DeleteDialogOpen)
+{
+    <ModalDialog Title="Are You Sure?" Text="Do you want to delete this exercise?" OnClose="@OnDeleteDialogClose" DialogType="ModalDialog.ModalDialogType.DeleteCancel"></ModalDialog>
+}
+
 @code {
     private List<Exercise> exercises = new List<Exercise>();
 
+    public bool DeleteDialogOpen { get; set; }
+
+    private int exerciseToDeleteId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,21 +78,33 @@ else
         Navigation.NavigateTo($"/updateexercise/{id}");
     }
 
-    private async Task Delete(int id)
+    private async Task OnDeleteDialogClose(bool accepted)
     {
-        try
+        if (accepted)
         {
-            await repo.DeleteAsync(id);
-            var exerciseToRemove = exercises.FirstOrDefault(u => u.Id == id);
-            if (exerciseToRemove != null)
+            try
             {
-                exercises.Remove(exerciseToRemove);
+                await repo.DeleteAsync(exerciseToDeleteId);
+                var workoutsToRemove = exercises.FirstOrDefault(u => u.Id == exerciseToDeleteId);
+                if (workoutsToRemove != null)
+                {
+                    exercises.Remove(workoutsToRemove);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting exercise: {ex.Message}");
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting exercise: {ex.Message}");
-        }
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(int id)
+    {
+        DeleteDialogOpen = true;
+        exerciseToDeleteId = id;
+        StateHasChanged();
     }
 }
 

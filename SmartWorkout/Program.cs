@@ -19,8 +19,7 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<IGenericRepository<User>, UserRepository>();
 builder.Services.AddScoped<IGenericRepository<Exercise>, ExerciseRepository>();
 builder.Services.AddScoped<IGenericRepository<Workout>, WorkoutRepository>();
-
-builder.Services.AddSingleton<AudioService>();
+builder.Services.AddScoped<IGenericRepository<ExerciseLog>, ExerciseLogRepository>();
 
 builder.Services.AddBlazorDragDrop();
 

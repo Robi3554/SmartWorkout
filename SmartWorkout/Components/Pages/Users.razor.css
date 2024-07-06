@@ -1,11 +1,25 @@
 ﻿.btn-primary-bordered {
-    padding : 6px 6px;
-    border-radius: 12px;
+    border-radius: 8px;
     color: #fff;
     background-color: #1b6ec2;
-    border-color: #1861ac;
+    border: 2px solid #1861ac;
+    padding: 12px 24px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
+.btn-danger-bordered {
+    padding: 6px 6px;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #e60026;
+    border: 2px solid #ff0800;
+    padding: 12px 24px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
 .header {
     color: #fff;
     background: linear-gradient(to right, #191970, #4b0082, #66023c);

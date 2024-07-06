@@ -14,7 +14,7 @@ namespace SmartWorkout.DataAccess
         public DbSet<User> Users { get; set; }
         public DbSet<Workout> Workouts { get; set; }
         public DbSet<Exercise> Exercises { get; set; }
-        public DbSet<ExerciseLog> Logs { get; set; }
+        public DbSet<User> Logs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,0 +1,49 @@
+﻿@page "/addexerciselog"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Repositories
+
+@inject IGenericRepository<Workout> repoW
+@inject IGenericRepository<ExerciseLog> repoE
+@inject NavigationManager Navigation
+
+<h3>AddExerciseLog</h3>
+
+<EditForm Model="newExerciseLog" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3 w-50">
+        <label for="id">User</label>
+        <InputNumber id="userId" class="form-control" @bind-Value="newExerciseLog.WorkoutId" disabled />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="id">User</label>
+        <InputSelect id="userId" class="custom-select" @bind-Value="newExerciseLog.ExerciseId" />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="duration">Workout Duration</label>
+        <InputNumber id="duration" class="form-control" @bind-Value="newExerciseLog.Duration" />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="duration">Workout Date</label>
+        <InputDate id="duration" class="form-control" @bind-Value="newExerciseLog.Reps" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Add Workout</button>
+    </div>
+</EditForm>
+
+@code {
+    private ExerciseLog newExerciseLog;
+
+    private Workout workout = new Workout();
+
+    private async Task Submit()
+    {
+        await repoE.AddAsync(newExerciseLog);
+        Navigation.NavigateTo($"/workouts/{workout.UserId}");
+    }
+}

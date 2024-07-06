@@ -1,41 +1,53 @@
 ﻿.btn-primary-bordered {
-    border-radius: 8px; /* Make the button slightly rounder */
+    border-radius: 8px; 
     color: #fff;
     background-color: #1b6ec2;
     border: 2px solid #1861ac;
-    padding: 12px 24px; /* Decrease padding to make the button smaller */
-    font-size: 16px; /* Decrease font size for smaller text */
+    padding: 12px 24px; 
+    font-size: 16px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-danger-bordered {
+    padding: 6px 6px;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #e60026;
+    border: 2px solid #ff0800;
+    padding: 12px 24px;
+    font-size: 16px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
 
 .btn-primary-bordered:hover {
-    background-color: #1861ac; /* Darker background color on hover */
-    border-color: #14548a; /* Darker border color on hover */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+    background-color: #1861ac;
+    border-color: #14548a; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 table {
     width: 100%;
-    border-collapse: collapse; /* Ensure no extra spacing around cells */
+    border-collapse: collapse;
 }
 
 tbody {
     width: 80%;
-    display: flex; /* Use flexbox layout for tbody */
-    flex-wrap: wrap; /* Allow rows to wrap onto new lines */
-    gap: 20px; /* Space between rows */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 tbody tr {
-    display: flex; /* Make each row a flex container */
+    display: flex;
     flex: 2;
     flex-wrap: wrap;
-    margin-bottom: 10px; /* Increased space between rows */
-    border: 1px solid #ccc; /* Border around each row */
-    padding: 15px; /* Increased padding for plump appearance */
-    box-sizing: border-box; /* Include border and padding in width/height */
-    border-radius: 10px; /* Rounded corners for rows */
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 10px;
 }
 
 td {

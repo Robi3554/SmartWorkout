@@ -72,8 +72,8 @@ else
                     <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
                     <td>
                         <button class="btn-primary-bordered" @onclick="() => GoToUpdate(user.Id)">Update</button>
-                        <button class="btn-primary-bordered" @onclick="() => Delete(user.Id)">Delete</button>
-                        <button class="btn-primary-bordered" @onclick="() => AddWorkout(user.Id)">Add Workout</button>
+                        <button class="btn-primary-bordered" @onclick="() => AddWorkout(user.Id)">Workouts</button>
+                        <button class="btn-danger-bordered" @onclick="() => OpenDeleteDialog(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -81,9 +81,18 @@ else
     </table>
 }
 
+@if (DeleteDialogOpen)
+{
+    <ModalDialog Title="Are You Sure?" Text="Do you want to delete this user?" OnClose="@OnDeleteDialogClose" DialogType="ModalDialog.ModalDialogType.DeleteCancel"></ModalDialog>
+}
+
 @code {
     private List<User> users = new List<User>();
     private List<User> _users = new List<User>();
+
+    public bool DeleteDialogOpen { get; set; }
+
+    private int userToDeleteId;
 
     private string selectedField = "name";
     private string searchTerm = string.Empty;
@@ -95,15 +104,33 @@ else
         _users = users.ToList();
     }
 
-    protected async Task Delete(int id)
+    private async Task OnDeleteDialogClose(bool accepted)
     {
-        await repo.DeleteAsync(id);
-        var userToRemove = users.FirstOrDefault(u => u.Id == id);
-        if (userToRemove != null)
+        if (accepted)
         {
-            users.Remove(userToRemove);
-            FilterUsers();
+            try
+            {
+                await repo.DeleteAsync(userToDeleteId);
+                var workoutsToRemove = users.FirstOrDefault(u => u.Id == userToDeleteId);
+                if (workoutsToRemove != null)
+                {
+                    users.Remove(workoutsToRemove);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting user: {ex.Message}");
+            }
         }
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialog(int id)
+    {
+        DeleteDialogOpen = true;
+        userToDeleteId = id;
+        StateHasChanged();
     }
 
     protected void GoToUpdate(int id)
