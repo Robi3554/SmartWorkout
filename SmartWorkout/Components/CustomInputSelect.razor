@@ -1,0 +1,28 @@
+﻿@typeparam TValue
+
+<InputSelect TValue="TValue" @attributes="AdditionalAttributes" class="@CssClass" @bind-Value="Value">
+    @ChildContent
+</InputSelect>
+
+@code {
+    [Parameter]
+    public string CssClass { get; set; } = "custom-select";
+
+    [Parameter]
+    public Dictionary<string, object> AdditionalAttributes { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public TValue Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        Value = (TValue)e.Value;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}
