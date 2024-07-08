@@ -8,6 +8,11 @@ body {
     color: var(--bs-body-color) !important;
 }
 
+input:disabled {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
 .top-row {
     background: var(--bs-body-bg) !important;
     color: aliceblue !important;

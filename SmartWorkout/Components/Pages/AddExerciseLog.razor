@@ -15,7 +15,7 @@
 
     <div class="mb-3 w-50">
         <label for="workoutId">Workout ID</label>
-        <InputNumber id="workoutId" class="form-control" @bind-Value="newExerciseLog.WorkoutId" disabled />
+        <InputNumber id="workoutId" class="form-control" readonly @bind-Value="newExerciseLog.WorkoutId"/>
     </div>
 
     <div class="mb-3 w-50">
@@ -37,6 +37,21 @@
     <div class="mb-3 w-50">
         <label for="reps">Reps</label>
         <InputNumber id="reps" class="form-control" @bind-Value="newExerciseLog.Reps" />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="reps">Weight</label>
+        <InputNumber id="weight" class="form-control" @bind-Value="newExerciseLog.Weight" />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="reps">Duration</label>
+        <InputNumber id="duration" class="form-control" @bind-Value="newExerciseLog.Duration" />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="reps">Distance</label>
+        <InputNumber id="distance" class="form-control" @bind-Value="newExerciseLog.Distance" />
     </div>
 
     <div>

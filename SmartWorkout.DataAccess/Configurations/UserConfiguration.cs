@@ -17,6 +17,9 @@ namespace SmartWorkout.DBAccess.Configurations
             builder.Property(u => u.Phone).HasMaxLength(15);
             builder.Property(u => u.Name).IsRequired();
             builder.Property(u => u.Surname).IsRequired();
+            builder.Property(u => u.Email).IsRequired();
+            builder.Property(u => u.Role).IsRequired();
+            builder.Property(u => u.Password).IsRequired();
         }
     }
 }

@@ -14,5 +14,7 @@ namespace SmartWorkout.DataAccess.Repositories
         Task<T> AddAsync(T t);
         Task<T> UpdateAsync(T t);
         Task DeleteAsync(int id);
+        Task DeleteAsyncExec(int id1, int id2);
+        Task<T> GetByIdAsyncExec(int id1, int id2);
     }
 }

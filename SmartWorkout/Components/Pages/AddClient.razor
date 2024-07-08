@@ -27,6 +27,11 @@
         <InputText id="email" class="form-control" @bind-Value="newUser.Email" />
         <ValidationMessage For="@(() => newUser.Email)" />
     </div>
+    <div class="mb-3 w-50">
+        <label for="password">Password</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="newUser.Password" />
+        <ValidationMessage For="@(() => newUser.Password)" />
+    </div>
     <div class="mb-3 w-25">
         <label for="phone">Phone</label>
         <InputText id="phone" class="form-control" @bind-Value="newUser.Phone" />
@@ -42,6 +47,20 @@
         <InputNumber id="age" class="form-control" @bind-Value="newUser.Age" />
         <ValidationMessage For="@(() => newUser.Age)" />
     </div>
+    <div class="mb-3 w-25">
+        <label for="role">Role</label>
+        <div>
+            <InputRadioGroup id="role" class="form-control" @bind-Value="newUser.Role">
+                @foreach(var role in (Roles[])Enum.GetValues(typeof(Roles)))
+                {
+                    <InputRadio Value="@(role.ToString())" />
+                    @role
+                    <br />
+                }             
+            </InputRadioGroup>
+        </div>
+        <ValidationMessage For="@(() => newUser.Role)" />
+    </div>
     <div>
         <button type="submit" class="btn btn-primary">Add User</button>
     </div>
@@ -51,6 +70,8 @@
     private User newUser = new User();
 
     protected override void OnInitialized() => newUser ??= new();
+
+    public enum Roles {Trainer, Client}
 
     private async Task Submit()
     {

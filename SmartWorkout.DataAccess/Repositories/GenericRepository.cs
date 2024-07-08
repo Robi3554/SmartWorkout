@@ -26,7 +26,7 @@ namespace SmartWorkout.DataAccess.Repositories
             return t;
         }
 
-        public async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(int id)
         {
             var t = await _context.Set<T>().FindAsync(id);
 
@@ -78,6 +78,16 @@ namespace SmartWorkout.DataAccess.Repositories
             _context.Set<T>().Entry(t).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return t;
+        }
+
+        public virtual Task DeleteAsyncExec(int id1, int id2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<T> GetByIdAsyncExec(int id1, int id2)
+        {
+            throw new NotImplementedException();
         }
     }
 }

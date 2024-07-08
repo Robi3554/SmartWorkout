@@ -26,6 +26,11 @@
         <InputText id="email" class="form-control" @bind-Value="modUser.Email" />
         <ValidationMessage For="@(() => modUser.Email)" />
     </div>
+    <div class="mb-3 w-50">
+        <label for="password">Password</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="modUser.Password" />
+        <ValidationMessage For="@(() => modUser.Password)" />
+    </div>
     <div class="mb-3 w-25">
         <label for="phone">Phone</label>
         <InputText id="phone" class="form-control" @bind-Value="modUser.Phone" />
@@ -41,6 +46,20 @@
         <InputNumber id="age" class="form-control" @bind-Value="modUser.Age" />
         <ValidationMessage For="@(() => modUser.Age)" />
     </div>
+    <div class="mb-3 w-25">
+        <label for="role">Role</label>
+        <div>
+            <InputRadioGroup id="role" class="form-control" @bind-Value="modUser.Role">
+                @foreach (var role in (Roles[])Enum.GetValues(typeof(Roles)))
+                {
+                    <InputRadio Value="@(role.ToString())" />
+                    @role
+                    <br />
+                }
+            </InputRadioGroup>
+        </div>
+        <ValidationMessage For="@(() => modUser.Role)" />
+    </div>
     <div>
         <button type="submit" class="btn btn-primary">Update User</button>
     </div>
@@ -51,6 +70,8 @@
 
     [Parameter]
     public int userID { get; set; }
+
+    public enum Roles { Trainer, Client }
 
     protected override async Task OnInitializedAsync()
     {

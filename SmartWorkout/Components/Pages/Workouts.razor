@@ -5,6 +5,7 @@
 
 @inject IGenericRepository<User> repoU;
 @inject IGenericRepository<Workout> repoW;
+@inject IGenericRepository<ExerciseLog> repoEl;
 @inject NavigationManager Navigation;
 
 @attribute [StreamRendering]
@@ -42,14 +43,37 @@ else
                             <ul class="list-group">
                                 @foreach (var log in workout.Logs)
                                 {
-                                    <li class="list-group-item">@log.Exercise.Name - Sets: @log.Sets, Reps: @log.Reps</li>
+                                    <li class="list-group-item">
+                                        @log.Exercise.Name -
+                                        @if (log.Sets.HasValue)
+                                        {
+                                            <span> Sets: @log.Sets</span>
+                                        }
+                                        @if (log.Reps.HasValue)
+                                        {
+                                            <span> Reps: @log.Reps</span>
+                                        }
+                                        @if (log.Weight.HasValue)
+                                        {
+                                            <span> Weight: @log.Weight</span>
+                                        }
+                                        @if (log.Duration.HasValue)
+                                        {
+                                            <span> Duration: @log.Duration</span>
+                                        }
+                                        @if (log.Distance.HasValue)
+                                        {
+                                            <span> Distance: @log.Distance</span>
+                                        }
+                                    </li>
+                                    <button class="btn btn-danger mt-2 ml-2" @onclick="() => OpenDeleteDialogE(log.WorkoutId, log.ExerciseId)">Delete Exercise</button>
+                                    <button class="btn btn-primary mt-2" @onclick="() => GoToUpdateExercise(log.WorkoutId, log.ExerciseId, userID)">Update Exercise</button>
                                 }
                             </ul>
                         }
-
+                        <button class="btn btn-primary mt-2" @onclick="() => GoToUpdateWorkout(selectedUser.Id, workout.Id)">Update Workout</button>
                         <button class="btn btn-primary mt-2" @onclick="() => GoToAdd(workout.Id, userID)">Add Exercise</button>
-                        <button class="btn btn-primary mt-2" @onclick="() => GoToUpdate(workout.Id)">Update</button>
-                        <button class="btn btn-danger mt-2 ml-2" @onclick="() => OpenDeleteDialog(workout.Id)">Delete</button>
+                        <button class="btn btn-danger mt-2 ml-2" @onclick="() => OpenDeleteDialogW(workout.Id)">Delete Workout</button>
                     </div>
                 </div>
             </div>
@@ -59,9 +83,14 @@ else
 
 <button class="btn btn-primary mt-2" @onclick="() => GoToAddWorkout(selectedUser.Id)">Add Workout</button>
 
-@if (DeleteDialogOpen)
+@if (DeleteWorkoutDialogOpen)
 {
-    <ModalDialog Title="Are You Sure?" Text="Do you want to delete this workout?" OnClose="@OnDeleteDialogClose" DialogType="ModalDialog.ModalDialogType.DeleteCancel"></ModalDialog>
+    <ModalDialog Title="Are You Sure?" Text="Do you want to delete this workout?" OnClose="@OnDeleteDialogCloseW" DialogType="ModalDialog.ModalDialogType.DeleteCancel"></ModalDialog>
+}
+
+@if (DeleteExerciseDialogOpen)
+{
+    <ModalDialog Title="Are You Sure?" Text="Do you want to delete this exercise?" OnClose="@OnDeleteDialogCloseE" DialogType="ModalDialog.ModalDialogType.DeleteCancel"></ModalDialog>
 }
 
 @code {
@@ -71,7 +100,11 @@ else
 
     private int workoutToDeleteId;
 
-    public bool DeleteDialogOpen { get; set; }
+    private int logWorkID;
+    private int logExecId;
+
+    public bool DeleteWorkoutDialogOpen { get; set; }
+    public bool DeleteExerciseDialogOpen { get; set; }
 
     [Parameter]
     public int userID { get; set; }
@@ -87,7 +120,7 @@ else
         await LoadSelectedUser();
     }
 
-    private async Task OnDeleteDialogClose(bool accepted)
+    private async Task OnDeleteDialogCloseW(bool accepted)
     {
         if (accepted)
         {
@@ -105,14 +138,50 @@ else
                 Console.WriteLine($"Error deleting workout: {ex.Message}");
             }
         }
-        DeleteDialogOpen = false;
+        DeleteWorkoutDialogOpen = false;
         StateHasChanged();
     }
 
-    private void OpenDeleteDialog(int id)
+    private async Task OnDeleteDialogCloseE(bool accepted)
     {
-        DeleteDialogOpen = true;
+        if (accepted)
+        {
+            try
+            {
+                await repoEl.DeleteAsyncExec(logWorkID, logExecId);
+                
+                var workoutToUpdate = workouts.FirstOrDefault(w => w.Id == logWorkID);
+
+                if (workoutToUpdate != null)
+                {
+                    var logToRemove = workoutToUpdate.Logs.FirstOrDefault(log => log.ExerciseId == logExecId);
+                    if (logToRemove != null)
+                    {
+                        workoutToUpdate.Logs.Remove(logToRemove);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting exercise log: {ex.Message}");
+            }
+        }
+        DeleteExerciseDialogOpen = false;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialogW(int id)
+    {
+        DeleteWorkoutDialogOpen = true;
         workoutToDeleteId = id;
+        StateHasChanged();
+    }
+
+    private void OpenDeleteDialogE(int id1, int id2)
+    {
+        DeleteExerciseDialogOpen = true;
+        logWorkID = id1;
+        logExecId = id2;
         StateHasChanged();
     }
 
@@ -141,9 +210,14 @@ else
         }
     }
 
-    private void GoToUpdate(int id)
+    private void GoToUpdateWorkout(int id1, int id2)
     {
-        Navigation.NavigateTo($"/updateexercise/{id}");
+        Navigation.NavigateTo($"/updateworkout/{id1}/{id2}");
+    }
+
+    private void GoToUpdateExercise(int id1, int id2, int id3)
+    {
+        Navigation.NavigateTo($"/updateexerciselog/{id1}/{id2}/{id3}");
     }
 
     private void GoToAdd(int id, int userId)

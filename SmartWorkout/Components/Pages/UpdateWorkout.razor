@@ -1,0 +1,66 @@
+﻿@page "/updateworkout/{userID:int}/{workoutID:int}"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Repositories
+
+@inject IGenericRepository<User> repoU
+@inject IGenericRepository<Workout> repoW
+@inject NavigationManager Navigation
+
+<h3>UpdateWorkout</h3>
+
+<EditForm Model="modWorkout" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3 w-50">
+        <label for="id">User</label>
+        <InputNumber id="userId" class="form-control" readonly @bind-Value="modWorkout.UserId" />
+    </div>
+
+    <div class="form-control">
+        @if (selectedUser != null)
+        {
+            <span>@selectedUser.Name @selectedUser.Surname</span>
+        }
+    </div>
+
+    <br>
+
+    <div class="mb-3 w-50">
+        <label for="duration">Workout Duration</label>
+        <InputNumber id="duration" class="form-control" @bind-Value="modWorkout.Duration" />
+    </div>
+
+    <div class="mb-3 w-50">
+        <label for="duration">Workout Date</label>
+        <InputDate id="duration" class="form-control" @bind-Value="modWorkout.Date" />
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Update Workout</button>
+    </div>
+</EditForm>
+
+@code {
+    private Workout modWorkout;
+
+    private User selectedUser;
+
+    [Parameter]
+    public int userID { get; set; }
+
+    [Parameter]
+    public int workoutID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        modWorkout = await repoW.GetByIdAsync(workoutID) ?? new Workout();
+
+        selectedUser = await repoU.GetByIdAsync(userID) ?? new User();
+    }
+
+    private async Task Submit()
+    {
+        await repoW.UpdateAsync(modWorkout);
+        Navigation.NavigateTo($"/workouts/{selectedUser.Id}");
+    }
+}

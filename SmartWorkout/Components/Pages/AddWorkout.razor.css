@@ -2,33 +2,5 @@
     width: 615px;
 }
 
-input[type="number"],
-select.custom-select {
-    appearance: none;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 10px;
-    font-size: 16px;
-    color: #333;
-    width: 100%;
-    box-sizing: border-box;
-    cursor: pointer;
-    height: 40px;
-    line-height: 1.5;
-}
-
-input[type="number"]:focus,
-select.custom-select:focus {
-    outline: none;
-    border-color: #66afe9;
-    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
-}
-
-select.custom-select option {
-    background-color: #fff;
-    color: #333;
-}
-
 
 

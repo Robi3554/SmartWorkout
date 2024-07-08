@@ -14,7 +14,7 @@
 
     <div class="mb-3 w-50">
         <label for="id">User</label>
-        <InputNumber id="userId" class="form-control" @bind-Value="newWorkout.UserId" disabled />
+        <InputNumber id="userId" class="form-control" readonly @bind-Value="newWorkout.UserId" />
     </div>
 
     <div class="form-control">
@@ -29,6 +29,7 @@
     <div class="mb-3 w-50">
         <label for="duration">Workout Duration</label>
         <InputNumber id="duration" class="form-control" @bind-Value="newWorkout.Duration" />
+        <ValidationMessage For="@(() => newWorkout.Duration)" />
     </div>
 
     <div class="mb-3 w-50">
@@ -61,10 +62,5 @@
     {
         await repoW.AddAsync(newWorkout);
         Navigation.NavigateTo($"/workouts/{selectedUser.Id}");
-    }
-
-    private void GoToUpdate(int id)
-    {
-
     }
 }
