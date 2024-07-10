@@ -29,7 +29,11 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Assign Trainer</button>
+        <button type="submit" class="btn btn-primary-bordered">Assign Trainer</button>
+        @if (user.TrainerId != null)
+        {
+            <button class="btn btn-danger-bordered" @onclick="UnassignTrainer">Unassign Trainer</button>
+        }
     </EditForm>
 }
 else
@@ -54,6 +58,13 @@ else
 
     private async Task Submit()
     {
+        await repo.UpdateAsync(user);
+        Navigation.NavigateTo("/users");
+    }
+
+    private async Task UnassignTrainer()
+    {
+        user.TrainerId = null;
         await repo.UpdateAsync(user);
         Navigation.NavigateTo("/users");
     }
