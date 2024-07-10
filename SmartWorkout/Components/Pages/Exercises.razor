@@ -34,7 +34,7 @@ else
                     @* <td>@exercise.Id</td> *@
                     <td>@exercise.Name</td>
                     <td>
-                        <button class="btn-primary-bordered" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
+                        <button class="btn-update-bordered" @onclick="() => GoToUpdate(exercise.Id)">Update</button>
                         <button class="btn-danger-bordered" @onclick="() => OpenDeleteDialog(exercise.Id)">Delete</button>
                     </td>
                 </tr>

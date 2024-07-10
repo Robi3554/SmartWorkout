@@ -27,6 +27,14 @@ else if (workouts.Count == 0)
 else
 {
     <h2>Workouts for @selectedUser.Name @selectedUser.Surname</h2>
+    @if (selectedUser.TrainerId != null)
+    {
+        var trainer = trainers.FirstOrDefault(t => t.Id == selectedUser.TrainerId);
+        if (trainer != null)
+        {
+            <h2>Trainer: @trainer.Name @trainer.Surname</h2>
+        }
+    }
     <div class="row">
         @foreach (var workout in workouts)
         {
@@ -66,14 +74,14 @@ else
                                             <span> Distance: @log.Distance</span>
                                         }
                                     </li>
-                                    <button class="btn btn-danger mt-2 ml-2" @onclick="() => OpenDeleteDialogE(log.WorkoutId, log.ExerciseId)">Delete Exercise</button>
-                                    <button class="btn btn-primary mt-2" @onclick="() => GoToUpdateExercise(log.WorkoutId, log.ExerciseId, userID)">Update Exercise</button>
+                                    <button class="btn btn-danger-bordered mt-2 ml-2" @onclick="() => OpenDeleteDialogE(log.WorkoutId, log.ExerciseId)">Delete Exercise</button>
+                                    <button class="btn btn-update-bordered mt-2" @onclick="() => GoToUpdateExercise(log.WorkoutId, log.ExerciseId, userID)">Update Exercise</button>
                                 }
                             </ul>
                         }
-                        <button class="btn btn-primary mt-2" @onclick="() => GoToUpdateWorkout(selectedUser.Id, workout.Id)">Update Workout</button>
-                        <button class="btn btn-primary mt-2" @onclick="() => GoToAdd(workout.Id, userID)">Add Exercise</button>
-                        <button class="btn btn-danger mt-2 ml-2" @onclick="() => OpenDeleteDialogW(workout.Id)">Delete Workout</button>
+                        <button class="btn btn-update-bordered mt-2" @onclick="() => GoToUpdateWorkout(selectedUser.Id, workout.Id)">Update Workout</button>
+                        <button class="btn btn-add-bordered mt-2" @onclick="() => GoToAdd(workout.Id, userID)">Add Exercise</button>
+                        <button class="btn btn-danger-bordered mt-2 ml-2" @onclick="() => OpenDeleteDialogW(workout.Id)">Delete Workout </button>
                     </div>
                 </div>
             </div>
@@ -81,7 +89,7 @@ else
     </div>
 }
 
-<button class="btn btn-primary mt-2" @onclick="() => GoToAddWorkout(selectedUser.Id)">Add Workout</button>
+<button class="btn btn-add-bordered mt-2" @onclick="() => GoToAddWorkout(selectedUser.Id)">Add Workout</button>
 
 @if (DeleteWorkoutDialogOpen)
 {
@@ -95,6 +103,7 @@ else
 
 @code {
     private List<Workout> workouts;
+    private List<User> trainers;
 
     private User selectedUser;
 
@@ -118,6 +127,7 @@ else
     {
         await LoadWorkouts();
         await LoadSelectedUser();
+        await LoadTrainers();
     }
 
     private async Task OnDeleteDialogCloseW(bool accepted)
@@ -207,6 +217,19 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading user: {ex.Message}");
+        }
+    }
+
+    private async Task LoadTrainers()
+    {
+        try
+        {
+            var colU = await repoU.GetAllAsync();
+            trainers = colU.ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading trainers: {ex.Message}");
         }
     }
 

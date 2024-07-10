@@ -1,11 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@inject IHttpContextAccessor HttpContextAccessor
 
 <HeadContent>
     @if (isDarkMode)
     {
-        <link rel="stylesheet" href="DarkMode.css"/>
+        <link rel="stylesheet" href="DarkMode.css" />
     }
 </HeadContent>
+
 
 <div class="page">
     <div class="sidebar">
@@ -15,8 +17,16 @@
     <main>
         <div class="top-row px-4">
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked="@isDarkMode" @onchange="@OnCheckboxChange"/>
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked="@isDarkMode" @onchange="@OnCheckboxChange" />
                 <label class="form-check-label" for="flexSwitchCheckDefault">Dark Mode</label>
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <a href="/login">Login</a>
+                    </NotAuthorized>
+                    <Authorized>
+                        <a href="/logout">Logout</a>
+                    </Authorized>
+                </AuthorizeView>
             </div>
         </div>
 
@@ -32,12 +42,12 @@
     <a class="dismiss">🗙</a>
 </div>
 
-
-@code{
+@code {
     private bool isDarkMode = false;
 
-    private void OnCheckboxChange(ChangeEventArgs e){
-        if(e.Value != null)
+    private void OnCheckboxChange(ChangeEventArgs e)
+    {
+        if (e.Value != null)
         {
             isDarkMode = (bool)e.Value;
         }

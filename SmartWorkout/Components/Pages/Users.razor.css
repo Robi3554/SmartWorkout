@@ -1,5 +1,6 @@
 ﻿.btn-primary-bordered {
-    border-radius: 8px;
+    /*padding: 6px 6px;*/
+    border-radius: 12px;
     color: #fff;
     background-color: #1b6ec2;
     border: 2px solid #1861ac;
@@ -10,7 +11,7 @@
 }
 
 .btn-danger-bordered {
-    padding: 6px 6px;
+    /*padding: 6px 6px;*/
     border-radius: 12px;
     color: #fff;
     background-color: #e60026;
@@ -20,6 +21,20 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
+
+.btn-update-bordered {
+    /*padding: 6px 6px;*/
+    border-radius: 12px;
+    color: #fff;
+    background-color: #ff6600; 
+    border: 2px solid #ff8c00; 
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+
 .header {
     color: #fff;
     background: linear-gradient(to right, #191970, #4b0082, #66023c);

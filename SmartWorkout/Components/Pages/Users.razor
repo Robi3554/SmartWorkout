@@ -1,12 +1,12 @@
 ﻿@page "/users"
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
-
-@inject IGenericRepository<User> repo;
-@inject NavigationManager Navigation;
+@using System.Security.Claims
+@inject IGenericRepository<User> repo
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [StreamRendering]
-
 @rendermode InteractiveServer
 
 <PageTitle>Users</PageTitle>
@@ -15,7 +15,7 @@
 
 <form @onsubmit="HandleFormSubmit">
     <div>
-        <SearchBar Items="users" OnSearch="OnSearchTermChanged"></SearchBar>
+        <SearchBar Items="_users" OnSearch="OnSearchTermChanged"></SearchBar>
     </div>
 
     <div class="container">
@@ -37,10 +37,10 @@
         <label>
             <input type="radio" name="search" value="age" @onchange="OnSearchFieldChanged" checked="@(selectedField == "age")"> Age
         </label>
-    </div>    
+    </div>
 </form>
 
-@if (users == null)
+@if (_users == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -61,7 +61,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in _users)
+            @foreach (var user in _users.Where(u => u.Role != "Admin"))
             {
                 <tr>
                     <td>@user.Id</td>
@@ -69,13 +69,20 @@ else
                     <td>@user.Surname</td>
                     <td>@(user.Email ?? "NoEmail")</td>
                     <td>@(!string.IsNullOrEmpty(user.Phone) ? user.Phone : "NoPhone")</td>
-                    <td>@(!string.IsNullOrEmpty(user.Weight.ToString()) ? user.Weight : "NoWeight")</td>
-                    <td>@(!string.IsNullOrEmpty(user.Age.ToString()) ? user.Age : "NoAge")</td>
+                    <td>@(!string.IsNullOrEmpty(user.Weight?.ToString()) ? user.Weight.ToString() : "NoWeight")</td>
+                    <td>@(!string.IsNullOrEmpty(user.Age?.ToString()) ? user.Age.ToString() : "NoAge")</td>
                     <td>@user.Role</td>
                     <td>
-                        <button class="btn-primary-bordered" @onclick="() => GoToUpdate(user.Id)">Update</button>
-                        <button class="btn-primary-bordered" @onclick="() => AddWorkout(user.Id)">Workouts</button>
-                        <button class="btn-danger-bordered" @onclick="() => OpenDeleteDialog(user.Id)">Delete</button>
+                        @if (IsAuthorizedForWorkouts(user.Id, user.TrainerId))
+                        {
+                            <button class="btn-primary-bordered" @onclick="() => ViewWorkouts(user.Id)">Workouts</button>
+                            <button class="btn-primary-bordered" @onclick="() => GoToTrainers(user.Id)">Select Trainer</button>
+                        }
+                        @if (IsAdmin())
+                        {
+                            <button class="btn-update-bordered" @onclick="() => GoToUpdate(user.Id)">Update</button>
+                            <button class="btn-danger-bordered" @onclick="() => OpenDeleteDialog(user.Id)">Delete</button>
+                        }
                     </td>
                 </tr>
             }
@@ -89,13 +96,10 @@ else
 }
 
 @code {
-    private List<User> users = new List<User>();
-    private List<User> _users = new List<User>();
-
-    public bool DeleteDialogOpen { get; set; }
-
+    private List<User> users;
+    private List<User> _users;
+    private bool DeleteDialogOpen;
     private int userToDeleteId;
-
     private string selectedField = "name";
     private string searchTerm = string.Empty;
 
@@ -141,14 +145,14 @@ else
         Navigation.NavigateTo($"/updateclient/{id}");
     }
 
-    protected void AddWorkout(int id)
+    protected void GoToTrainers(int id)
     {
-        Navigation.NavigateTo($"/workouts/{id}");
+        Navigation.NavigateTo($"/selecttrainer/{id}");
     }
 
-    protected void GoToWorkouts(int id)
+    protected void ViewWorkouts(int id)
     {
-        Navigation.NavigateTo($"/updateclient/{id}");
+        Navigation.NavigateTo($"/workouts/{id}");
     }
 
     private void OnSearchFieldChanged(ChangeEventArgs e)
@@ -201,5 +205,21 @@ else
                     break;
             }
         }
+    }
+
+    private bool IsAdmin()
+    {
+        var authState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        return authState.User.IsInRole("Admin");
+    }
+
+    private bool IsAuthorizedForWorkouts(int userId, int? trainerId)
+    {
+        var authState =  AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+
+        return user.Identity != null && user.Identity.IsAuthenticated &&
+               (user.IsInRole("Admin") || user.FindFirst(ClaimTypes.NameIdentifier)?.Value == userId.ToString() 
+               || (user.IsInRole("Trainer") && user.FindFirst(ClaimTypes.NameIdentifier)?.Value == trainerId.ToString()));
     }
 }

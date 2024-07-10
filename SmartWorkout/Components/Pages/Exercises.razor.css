@@ -21,6 +21,18 @@
     transition: all 0.3s ease;
 }
 
+.btn-update-bordered {
+    padding: 6px 6px;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #ff6600;
+    border: 2px solid #ff8c00;
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
 .btn-primary-bordered:hover {
     background-color: #1861ac;
     border-color: #14548a; 

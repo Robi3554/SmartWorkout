@@ -40,6 +40,8 @@ namespace SmartWorkout.DBAccess.Entities
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = null!;
 
+        public int? TrainerId { get; set; } 
+
         public ICollection<Workout> Workouts { get; set; } = new HashSet<Workout>();
     }
 }

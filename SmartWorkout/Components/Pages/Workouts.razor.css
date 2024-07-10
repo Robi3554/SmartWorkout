@@ -5,9 +5,9 @@
     background: transparent;
 }
 
-    .card:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 .card-title {
     font-size: 1.25rem;
@@ -17,3 +17,51 @@
 .card-text {
     margin-bottom: 0.5rem;
 }
+
+.btn-primary-bordered {
+    border-radius: 8px;
+    color: #fff;
+    background-color: #1b6ec2;
+    border: 2px solid #1861ac;
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-danger-bordered {
+    padding: 6px 6px;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #e60026;
+    border: 2px solid #ff0800;
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-update-bordered {
+    padding: 6px 6px;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #ff6600;
+    border: 2px solid #ff8c00;
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-add-bordered {
+    padding: 6px 6px;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #28a745; 
+    border: 2px solid #218838; 
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+

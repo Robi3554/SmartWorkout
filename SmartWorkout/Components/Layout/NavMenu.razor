@@ -9,47 +9,58 @@
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <NavLink class="nav-link d-flex align-items-center" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill mb-4 fa-2x" aria-hidden="true"></span> Home
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="users">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Users
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="Admin,Trainer,Client">
+            <Authorized>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="exercises">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Exercises
-            </NavLink>
-        </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="users">
+                        <span class="bi bi-people mb-4 fa-2x" aria-hidden="true"></span> Users
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="memes">
-                <span class="bi bi-cup-hot" aria-hidden="true"></span> Memes
-            </NavLink>
-        </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="exercises">
+                        <span class="bi bi-bicycle mb-4 fa-2x" aria-hidden="true"></span> Exercises
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="music">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Music
-            </NavLink>
-        </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="memes">
+                        <span class="bi bi-emoji-laughing mb-4 fa-2x" aria-hidden="true"></span> Memes
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="addclient">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add Client
-            </NavLink>
-        </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="music">
+                        <span class="bi bi-music-note mb-4 fa-2x" aria-hidden="true"></span> Music
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="addexercise">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add Exercise
-            </NavLink>
-        </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="addclient">
+                        <span class="bi bi-person-plus-fill mb-4 fa-2x" aria-hidden="true"></span> Add Client
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="addexercise">
+                        <span class="bi bi-plus-square-fill mb-4 fa-2x" aria-hidden="true"></span> Add Exercise
+                    </NavLink>
+                </div>
+
+            </Authorized>
+        </AuthorizeView>
 
     </nav>
 </div>
-
