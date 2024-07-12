@@ -1,0 +1,67 @@
+﻿@page "/followrequests"
+@using SmartWorkout.DBAccess.Entities
+@using SmartWorkout.DataAccess.Entities
+@using SmartWorkout.DataAccess.Services
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject FollowService FollowService
+
+<PageTitle>Follow Requests</PageTitle>
+
+<h1>Follow Requests</h1>
+
+@if (followRequests == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!followRequests.Any())
+{
+    <p>No pending follow requests.</p>
+}
+else
+{
+    <table class="table">
+        <thead class="header">
+            <tr>
+                <th>Requester Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in followRequests)
+            {
+                <tr>
+                    <td>@request.Requester.Name @request.Requester.Surname</td>
+                    <td>
+                        <button class="btn-primary-bordered" @onclick="() => AcceptFollowRequest(request.Id)">Accept</button>
+                        <button class="btn-danger-bordered" @onclick="() => DeclineFollowRequest(request.Id)">Decline</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<FollowRequest> followRequests;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = int.Parse(authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+        followRequests = await FollowService.GetPendingFollowRequestsAsync(userId);
+    }
+
+    private async Task AcceptFollowRequest(int followRequestId)
+    {
+        await FollowService.AcceptFollowRequestAsync(followRequestId);
+        followRequests.RemoveAll(fr => fr.Id == followRequestId);
+    }
+
+    private async Task DeclineFollowRequest(int followRequestId)
+    {
+        await FollowService.DeclineFollowRequestAsync(followRequestId);
+        followRequests.RemoveAll(fr => fr.Id == followRequestId);
+    }
+}

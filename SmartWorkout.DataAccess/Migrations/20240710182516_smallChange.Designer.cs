@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartWorkout.DataAccess;
 
@@ -11,9 +12,11 @@ using SmartWorkout.DataAccess;
 namespace SmartWorkout.DataAccess.Migrations
 {
     [DbContext(typeof(SmartWorkoutContext))]
-    partial class SmartWorkoutContextModelSnapshot : ModelSnapshot
+    [Migration("20240710182516_smallChange")]
+    partial class smallChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,7 +165,7 @@ namespace SmartWorkout.DataAccess.Migrations
 
                     b.HasIndex("RequesterId");
 
-                    b.ToTable("FollowRequest", (string)null);
+                    b.ToTable("FollowRequests");
                 });
 
             modelBuilder.Entity("SmartWorkout.DataAccess.Entities.UserFollow", b =>
@@ -177,7 +180,7 @@ namespace SmartWorkout.DataAccess.Migrations
 
                     b.HasIndex("FollowerId");
 
-                    b.ToTable("UserFollow", (string)null);
+                    b.ToTable("UserFollows");
                 });
 
             modelBuilder.Entity("SmartWorkout.DBAccess.Entities.ExerciseLog", b =>

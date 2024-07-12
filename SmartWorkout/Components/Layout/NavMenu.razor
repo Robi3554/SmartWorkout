@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">SmartWorkout</a>
+        <a class="navbar-brand" href="">Gymstagram</a>
     </div>
 </div>
 
@@ -37,7 +37,25 @@
 
                 <div class="nav-item px-3">
                     <NavLink class="nav-link d-flex align-items-center" href="music">
-                        <span class="bi bi-music-note mb-4 fa-2x" aria-hidden="true"></span> Music
+                        <span class="bi bi-headphones mb-4 fa-2x" aria-hidden="true"></span> Music
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="followrequests">
+                        <span class="bi bi-envelope-plus mb-4 fa-2x" aria-hidden="true"></span> Follow Requests
+                    </NavLink>
+                </div>
+
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Admin,Trainer">
+            <Authorized>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link d-flex align-items-center" href="addexercise">
+                        <span class="bi bi-plus-square-fill mb-4 fa-2x" aria-hidden="true"></span> Add Exercise
                     </NavLink>
                 </div>
 
@@ -50,12 +68,6 @@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link d-flex align-items-center" href="addclient">
                         <span class="bi bi-person-plus-fill mb-4 fa-2x" aria-hidden="true"></span> Add Client
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link d-flex align-items-center" href="addexercise">
-                        <span class="bi bi-plus-square-fill mb-4 fa-2x" aria-hidden="true"></span> Add Exercise
                     </NavLink>
                 </div>
 

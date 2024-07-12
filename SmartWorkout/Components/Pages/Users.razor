@@ -2,9 +2,12 @@
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
 @using System.Security.Claims
+@using SmartWorkout.DataAccess.Services
+
 @inject IGenericRepository<User> repo
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject FollowService FollowService
 
 @attribute [StreamRendering]
 @rendermode InteractiveServer
@@ -52,7 +55,7 @@ else
                 <th>ID</th>
                 <th>Name</th>
                 <th>Surname</th>
-                <th>Email</th>
+               @*  <th>Email</th> *@
                 <th>Phone</th>
                 <th>Weight</th>
                 <th>Age</th>
@@ -63,25 +66,46 @@ else
         <tbody>
             @foreach (var user in _users.Where(u => u.Role != "Admin"))
             {
+                var userAuthorization = userAuthorizationList.FirstOrDefault(x => x.UserId == user.Id);
+                var isAuthorized = !userAuthorization.Equals(default) && userAuthorization.IsAuthorized;
+
+                bool showButton = user.Id != CurrentUserId;
+
                 <tr>
                     <td>@user.Id</td>
                     <td>@user.Name</td>
                     <td>@user.Surname</td>
-                    <td>@(user.Email ?? "NoEmail")</td>
+                   @*  <td>@(user.Email ?? "NoEmail")</td> *@
                     <td>@(!string.IsNullOrEmpty(user.Phone) ? user.Phone : "NoPhone")</td>
                     <td>@(!string.IsNullOrEmpty(user.Weight?.ToString()) ? user.Weight.ToString() : "NoWeight")</td>
                     <td>@(!string.IsNullOrEmpty(user.Age?.ToString()) ? user.Age.ToString() : "NoAge")</td>
                     <td>@user.Role</td>
                     <td>
-                        @if (IsAuthorizedForWorkouts(user.Id, user.TrainerId))
+                        @if (isAuthorized)
                         {
                             <button class="btn-primary-bordered" @onclick="() => ViewWorkouts(user.Id)">Workouts</button>
-                            <button class="btn-primary-bordered" @onclick="() => GoToTrainers(user.Id)">Select Trainer</button>
+                            if (!showButton)
+                            {
+                                <button class="btn-primary-bordered" @onclick="() => GoToTrainers(user.Id)">Select Trainer</button>
+                            }
+
                         }
                         @if (IsAdmin())
                         {
                             <button class="btn-update-bordered" @onclick="() => GoToUpdate(user.Id)">Update</button>
                             <button class="btn-danger-bordered" @onclick="() => OpenDeleteDialog(user.Id)">Delete</button>
+                        }
+                        @if (IsFollowRequestSent)
+                        {
+                            <button class="btn-primary" disabled>
+                                Follow Request Sent
+                            </button>
+                        }
+                        else if (!isAuthorized)
+                        {
+                            <button class="btn-primary-bordered" @onclick="() => SendFollowRequest(user.Id)">
+                                <i class="bi bi-indent"></i>
+                            </button>
                         }
                     </td>
                 </tr>
@@ -103,13 +127,30 @@ else
     private string selectedField = "name";
     private string searchTerm = string.Empty;
 
+    private int CurrentUserId => int.Parse((AuthenticationStateProvider.GetAuthenticationStateAsync().Result.User.FindFirst(ClaimTypes.NameIdentifier)?.Value));
+
+    private bool IsFollowRequestSent { get; set; }
+    private bool HideFollow { get; set; }
+    private bool followsUser;
+
+    private List<(int UserId, bool IsAuthorized)> userAuthorizationList;
+
     protected override async Task OnInitializedAsync()
     {
         var col = await repo.GetAllAsync();
         users = col.ToList();
         _users = users.ToList();
+
+        userAuthorizationList = new List<(int UserId, bool IsAuthorized)>();
+
+        foreach (var user in _users.Where(u => u.Role != "Admin"))
+        {
+            bool isAuthorized = await IsAuthorizedForWorkouts(user.Id, user.TrainerId);
+            userAuthorizationList.Add((user.Id, isAuthorized));
+        }
     }
 
+    #region DialogDelete
     private async Task OnDeleteDialogClose(bool accepted)
     {
         if (accepted)
@@ -139,7 +180,9 @@ else
         userToDeleteId = id;
         StateHasChanged();
     }
+    #endregion
 
+    #region GoTos
     protected void GoToUpdate(int id)
     {
         Navigation.NavigateTo($"/updateclient/{id}");
@@ -154,6 +197,65 @@ else
     {
         Navigation.NavigateTo($"/workouts/{id}");
     }
+    #endregion
+
+    #region Following
+    private async Task SendFollowRequest(int receiverId)
+    {
+        var requesterId = CurrentUserId;
+
+        await FollowService.SendFollowRequestAsync(requesterId, receiverId);
+
+        IsFollowRequestSent = true;
+
+        await RefreshUsers();
+    }
+
+    private async Task RefreshUsers()
+    {
+        var col = await repo.GetAllAsync();
+        _users = col.ToList();
+    }
+
+    private async Task<bool> ShouldHideFollowButton(int userId, string userRole)
+    {
+        var loggedInUserId = CurrentUserId;
+        var loggedInUserRole = (AuthenticationStateProvider.GetAuthenticationStateAsync().Result.User.FindFirst(ClaimTypes.Role)?.Value) ?? "";
+
+        return loggedInUserId == userId ||
+               loggedInUserRole == "Admin" ||
+               await FollowService.IsFollowRequestSentAsync(loggedInUserId, userId);
+    }
+
+    private async Task<bool> IsFollowing(int requesterId, int receiverId)
+    {
+        try
+        {
+            var followRequest = await FollowService.GetFollowRequestAsync(requesterId, receiverId);
+            return followRequest != null && followRequest.IsAccepted;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking follow status: {ex.Message}");
+            return false;
+        }
+    }
+
+    private async Task<bool> DoesCurrentUserFollow(int userId)
+    {
+        try
+        {
+            var currentUserId = CurrentUserId;
+            var isFollowing = await FollowService.IsFollowing(currentUserId, userId);
+            return isFollowing;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking follow status: {ex.Message}");
+            return false;
+        }
+    }
+    #endregion
 
     private void OnSearchFieldChanged(ChangeEventArgs e)
     {
@@ -213,13 +315,29 @@ else
         return authState.User.IsInRole("Admin");
     }
 
-    private bool IsAuthorizedForWorkouts(int userId, int? trainerId)
+    private async Task<bool> IsAuthorizedForWorkouts(int userId, int? trainerId)
     {
-        var authState =  AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        return user.Identity != null && user.Identity.IsAuthenticated &&
-               (user.IsInRole("Admin") || user.FindFirst(ClaimTypes.NameIdentifier)?.Value == userId.ToString() 
-               || (user.IsInRole("Trainer") && user.FindFirst(ClaimTypes.NameIdentifier)?.Value == trainerId.ToString()));
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return false;
+        }
+
+        if (user.IsInRole("Admin") || (user.IsInRole("Trainer") && user.FindFirst(ClaimTypes.NameIdentifier)?.Value == trainerId.ToString()))
+        {
+            return true;
+        }
+
+        var currentUserId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        if (currentUserId == userId)
+        {
+            return true;
+        }
+
+        followsUser = await DoesCurrentUserFollow(userId);
+
+        return followsUser;
     }
 }

@@ -5,6 +5,7 @@ using Plk.Blazor.DragDrop;
 using SmartWorkout.Components;
 using SmartWorkout.DataAccess;
 using SmartWorkout.DataAccess.Repositories;
+using SmartWorkout.DataAccess.Services;
 using SmartWorkout.DBAccess.Entities;
 using SmartWorkout.Services;
 using System;
@@ -30,6 +31,8 @@ builder.Services.AddBlazorDragDrop();
 
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
+
+builder.Services.AddScoped<FollowService>();
 
 builder.Services.AddHttpContextAccessor();
 

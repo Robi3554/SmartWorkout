@@ -1,9 +1,12 @@
 ﻿@page "/addclient"
+@using Microsoft.AspNetCore.Authorization
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
 
 @inject IGenericRepository<User> repo;
 @inject NavigationManager Navigation;
+
+@attribute [Authorize(Roles = "Admin")]
 
 <h3>AddClient</h3>
 

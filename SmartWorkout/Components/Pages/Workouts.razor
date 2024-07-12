@@ -2,11 +2,15 @@
 @using SmartWorkout.DBAccess.Entities
 @using SmartWorkout.DataAccess.Repositories
 @using MudBlazor
+@using SmartWorkout.DataAccess.Services
+@using System.Security.Claims
 
 @inject IGenericRepository<User> repoU;
 @inject IGenericRepository<Workout> repoW;
 @inject IGenericRepository<ExerciseLog> repoEl;
 @inject NavigationManager Navigation;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject FollowService FollowService
 
 @attribute [StreamRendering]
 
@@ -29,7 +33,7 @@ else
     <h2>Workouts for @selectedUser.Name @selectedUser.Surname</h2>
     @if (selectedUser.TrainerId != null)
     {
-        var trainer = trainers.FirstOrDefault(t => t.Id == selectedUser.TrainerId);
+        var trainer = users.FirstOrDefault(t => t.Id == selectedUser.TrainerId);
         if (trainer != null)
         {
             <h2>Trainer: @trainer.Name @trainer.Surname</h2>
@@ -74,14 +78,20 @@ else
                                             <span> Distance: @log.Distance</span>
                                         }
                                     </li>
-                                    <button class="btn btn-danger-bordered mt-2 ml-2" @onclick="() => OpenDeleteDialogE(log.WorkoutId, log.ExerciseId)">Delete Exercise</button>
-                                    <button class="btn btn-update-bordered mt-2" @onclick="() => GoToUpdateExercise(log.WorkoutId, log.ExerciseId, userID)">Update Exercise</button>
+                                    @if (isAuthorized)
+                                    {
+                                        <button class="btn btn-danger-bordered mt-2 ml-2" @onclick="() => OpenDeleteDialogE(log.WorkoutId, log.ExerciseId)">Delete Exercise</button>
+                                        <button class="btn btn-update-bordered mt-2" @onclick="() => GoToUpdateExercise(log.WorkoutId, log.ExerciseId, userID)">Update Exercise</button>
+                                    }
                                 }
                             </ul>
                         }
-                        <button class="btn btn-update-bordered mt-2" @onclick="() => GoToUpdateWorkout(selectedUser.Id, workout.Id)">Update Workout</button>
-                        <button class="btn btn-add-bordered mt-2" @onclick="() => GoToAdd(workout.Id, userID)">Add Exercise</button>
-                        <button class="btn btn-danger-bordered mt-2 ml-2" @onclick="() => OpenDeleteDialogW(workout.Id)">Delete Workout </button>
+                        @if (isAuthorized)
+                        {
+                            <button class="btn btn-update-bordered mt-2" @onclick="() => GoToUpdateWorkout(selectedUser.Id, workout.Id)">Update Workout</button>
+                            <button class="btn btn-add-bordered mt-2" @onclick="() => GoToAdd(workout.Id, userID)">Add Exercise</button>
+                            <button class="btn btn-danger-bordered mt-2 ml-2" @onclick="() => OpenDeleteDialogW(workout.Id)">Delete Workout </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -89,7 +99,10 @@ else
     </div>
 }
 
-<button class="btn btn-add-bordered mt-2" @onclick="() => GoToAddWorkout(selectedUser.Id)">Add Workout</button>
+@if (isAuthorized)
+{
+    <button class="btn btn-add-bordered mt-2" @onclick="() => GoToAddWorkout(selectedUser.Id)">Add Workout</button>
+}
 
 @if (DeleteWorkoutDialogOpen)
 {
@@ -103,7 +116,7 @@ else
 
 @code {
     private List<Workout> workouts;
-    private List<User> trainers;
+    private List<User> users;
 
     private User selectedUser;
 
@@ -115,12 +128,17 @@ else
     public bool DeleteWorkoutDialogOpen { get; set; }
     public bool DeleteExerciseDialogOpen { get; set; }
 
+    private List<(int UserId, bool IsAuthorized)> userAuthorizationList;
+
+    private bool isAuthorized;
+
     [Parameter]
     public int userID { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
+        isAuthorized = await IsAuthorizedForWorkouts(userID, selectedUser.TrainerId);
     }
 
     private async Task LoadDataAsync()
@@ -159,7 +177,7 @@ else
             try
             {
                 await repoEl.DeleteAsyncExec(logWorkID, logExecId);
-                
+
                 var workoutToUpdate = workouts.FirstOrDefault(w => w.Id == logWorkID);
 
                 if (workoutToUpdate != null)
@@ -225,7 +243,7 @@ else
         try
         {
             var colU = await repoU.GetAllAsync();
-            trainers = colU.ToList();
+            users = colU.ToList();
         }
         catch (Exception ex)
         {
@@ -251,5 +269,34 @@ else
     private void GoToAddWorkout(int id)
     {
         Navigation.NavigateTo($"/addworkout/{id}");
+    }
+
+    private async Task<bool> IsAuthorizedForWorkouts(int userId, int? trainerId)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return false;
+        }
+
+        if (user.IsInRole("Admin"))
+        {
+            return true;
+        }
+
+        var currentUserId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        if (currentUserId == userId)
+        {
+            return true;
+        }
+
+        if (user.IsInRole("Trainer") && user.FindFirst(ClaimTypes.NameIdentifier)?.Value == trainerId.ToString())
+        {
+            return true;
+        }
+
+        return false;
     }
 }

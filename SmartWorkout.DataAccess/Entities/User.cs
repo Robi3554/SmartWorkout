@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartWorkout.DataAccess.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -43,5 +44,11 @@ namespace SmartWorkout.DBAccess.Entities
         public int? TrainerId { get; set; } 
 
         public ICollection<Workout> Workouts { get; set; } = new HashSet<Workout>();
+
+        public ICollection<UserFollow> Following { get; set; } = new HashSet<UserFollow>();
+        public ICollection<UserFollow> Followers { get; set; } = new HashSet<UserFollow>();
+
+        public ICollection<FollowRequest> FollowRequestsSent { get; set; } = new HashSet<FollowRequest>();
+        public ICollection<FollowRequest> FollowRequestsReceived { get; set; } = new HashSet<FollowRequest>();
     }
 }

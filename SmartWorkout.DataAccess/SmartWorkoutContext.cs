@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmartWorkout.DataAccess.Configurations;
+using SmartWorkout.DataAccess.Entities;
 using SmartWorkout.DBAccess.Configurations;
 using SmartWorkout.DBAccess.Entities;
 
@@ -16,6 +18,9 @@ namespace SmartWorkout.DataAccess
         public DbSet<Exercise> Exercises { get; set; }
         public DbSet<User> Logs { get; set; }
 
+        public DbSet<UserFollow> UserFollows { get; set; }
+        public DbSet<FollowRequest> FollowRequests { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +29,8 @@ namespace SmartWorkout.DataAccess
             new WorkoutConfiguration().Configure(modelBuilder.Entity<Workout>());
             new ExerciseConfiguration().Configure(modelBuilder.Entity<Exercise>());
             new ExerciseLogConfig().Configure(modelBuilder.Entity<ExerciseLog>());
+            new FollowRequestConfiguration().Configure(modelBuilder.Entity<FollowRequest>());
+            new UserFollowConfiguration().Configure(modelBuilder.Entity<UserFollow>());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
